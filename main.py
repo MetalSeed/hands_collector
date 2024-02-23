@@ -11,6 +11,9 @@
 
 # 假设的 image_recognition 和 automation 模块
 # 实际使用时，请替换为你的具体实现
+import datetime
+
+import numpy as np
 import image_recognition as ir
 import automation as auto
 
@@ -18,6 +21,8 @@ import threading
 import time
 # 全局停止事件，用于优雅地中断线程
 stop_event = threading.Event()
+
+import os
 
 
 class BaseOperation:
@@ -28,55 +33,92 @@ class BaseOperation:
     def perform_operations(self):
         """执行与窗口相关的操作，子类应覆盖此方法"""
         raise NotImplementedError("Subclasses should implement this!")
+    
+    def reset(self):
+        """重置窗口状态"""
+        raise NotImplementedError("Subclasses should implement this!")
+    
+    def join_game(self):
+        """加入游戏"""
+        raise NotImplementedError("Subclasses should implement this!")
+    
+    def quit_game(self):
+        """退出游戏"""
+        raise NotImplementedError("Subclasses should implement this!")
 
-class GameOneOperation(BaseOperation): # wpk-LD1
-    """ 对单个游戏窗口执行自动化操作。"""
-    def perform_operations(self):
-        # 直接从self.window获取param和data_path
-        param = self.window.get('param', 0)
-        data_path = self.window.get('data_path', '')
-        print(f"Performing operations for {self.window['title']} - Game One")
+    def icon_full_name(self, icon_name):
+        # 获取当前脚本的绝对路径
+        script_dir = os.path.dirname(__file__)
+        # 构建目标文件的绝对路径，包括子文件夹路径
+        icon_path = os.path.join(script_dir, self.window.get('datapath', ''), self.window.get('platform', ''), icon_name)
+        return icon_path
 
-        while not stop_event.is_set():
-            print(f"在窗口 {self.window['title']} 上开始寻找符合条件的房间...")
-            # 模拟捕获屏幕，实际使用时应调用 ir.capture_screen
-            screenshot = 'screenshot_placeholder'
-            # 模拟查找房间名，实际使用时应调用 ir.find_room_names
-            room_name_pattern = "特殊房间"
-            matched_rooms = [('房间1', (100, 100, 200, 200))]
+    def findclick_icon_in_window(self, icon_name):
+        coord = ir.find_icon_in_window(self.window['title'], self.icon_full_name(icon_name))
+        if coord:
+            auto.click_on_screen(coord[0], coord[1])
+            print(f"在窗口 {self.window['title']} 中点击了图标 {icon_name}")
+            return 1
+        else:
+            print(f"在窗口 {self.window['title']} 中没有找到图标 {icon_name}")
+            return 0
 
-            if matched_rooms:
-                print(f"找到{len(matched_rooms)}个符合条件的房间在 {self.window['title']}，尝试进入第一个房间...")
-                room_position = matched_rooms[0][1]
-                # 调整点击位置到全屏坐标
-                global_position = (room_position[0] + self.window['region'][0], room_position[1] + self.window['region'][1])
-                # 模拟进入房间，实际使用时应调用 auto.enter_room
-                print(f"已进入 {self.window['title']} 的房间，等待游戏结束...")
-                time.sleep(10)  # 模拟等待游戏结束
-                print(f"游戏结束，在 {self.window['title']} 退出房间...")
-            else:
-                print(f"未找到符合条件的房间在 {self.window['title']}，稍后重试...")
-                time.sleep(5)
-
+class WePokerOperation(BaseOperation):
+    """对WePoker游戏窗口执行自动化操作。"""
+    def perform_operations(self): # 循环自动化
+        game_flag = 0
+        while not game_flag:
+            self.reset()
+            game_flag = self.join_game()
             if stop_event.is_set():
                 break
+            time.sleep(60*1)
+        game_flag = 0
+        while not game_flag:
+            game_flag = self.quit_game()
+            if stop_event.is_set():
+                break
+            time.sleep(60*1)
+
+    def reset(self):
+        for i in range(3):
+            self.findclick_icon_in_window('close.png')
+            time.sleep(1)
+        self.findclick_icon_in_window('refresh1.png')
+        time.sleep(1)
+        self.findclick_icon_in_window('refresh2.png')
+        time.sleep(1)
+
+    def join_game(self):
+        result = self.findclick_icon_in_window('join_game_dezhou.png')
+        time.sleep(10)
+        print(f"在窗口 {self.window['title']} 中加入了游戏")
+        return result
+
+    def quit_game(self):
+
+        flag = 0
+        flag += self.findclick_icon_in_window('end.png')
+        time.sleep(5)
+
+
+        flag += self.findclick_icon_in_window('menu.png')
+        time.sleep(5)
+
+        flag += self.findclick_icon_in_window('quit.png')
+        time.sleep(5)
         
-        time.sleep(2)  # 模拟操作耗时
-
-class GameTwoOperation(BaseOperation):
-    """游戏二的具体操作"""
-    def perform_operations(self):
-        print(f"Performing operations for {self.window['title']} - Game Two")
-        time.sleep(2)  # 模拟操作耗时
-
-def operate_on_window(window):
+        if flag == 3:
+            print(f"在窗口 {self.window['title']} 中离开了游戏")
+            return 1
+        else: return 0
+        
+def operate_on_window(window): # 线程函数
     # 根据窗口标题选择操作类
-    if 'GameOne' in window['title']:
-        operation = GameOneOperation(window)
-    elif 'GameTwo' in window['title']:
-        operation = GameTwoOperation(window)
-    elif 'GameThree' in window['title']:
-        operation = BaseOperation(window)  # 默认操作，不执行任何操作
+    if window.get('platform', '') == 'wpk':
+        operation = WePokerOperation(window)
+    elif window.get('platform', '') == 'other':
+        pass
 
     # 执行操作直到收到停止信号
     while not stop_event.is_set():
@@ -86,9 +128,10 @@ def operate_on_window(window):
 
 def main():
     windows = [
-        {'title': '窗口1 - GameOne', 'region': (0, 0, 800, 600), 'param': 42, 'data_path': '/path/to/data1'},
-        {'title': '窗口2 - GameTwo', 'region': (800, 0, 800, 600), 'param': 24, 'data_path': '/path/to/data2'},
-        {'title': '窗口3 - GameThree', 'region': (1600, 0, 800, 600), 'param': 66, 'data_path': '/path/to/data3'}
+        {'title': '窗口1 - GameOne', 'region': (0, 0, 800, 600), 'datapath': 'icon', 'platform': 'wpk', 'param': 1}
+        # ,
+        # {'title': '窗口2 - GameTwo', 'region': (800, 0, 800, 600), 'param': 24, 'data_path': '/path/to/data2'},
+        # {'title': '窗口3 - GameThree', 'region': (1600, 0, 800, 600), 'param': 66, 'data_path': '/path/to/data3'}
     ]
 
     threads = []
@@ -115,4 +158,4 @@ if __name__ == "__main__":
 
 # 请注意，并行处理可能会导致资源竞争（比如同时操作鼠标和键盘），这在
 # 自动化测试中尤其需要注意。确保你的应用场景适合进行并行处理，并且在
-# 可能的情况下，尝试减少对共享资源的并行访问。
+# 可能的情况下，尝试减少对共享资源的并行访问。ß

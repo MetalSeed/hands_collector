@@ -1,9 +1,10 @@
+import pygetwindow as gw
 import pyautogui
 import time
 
 def click_on_screen(x, y, duration=0.2):
     """
-    在屏幕上的指定位置执行点击操作。
+    在屏幕上的指定位置执行点击左键。
 
     参数:
     - x: 点击位置的X坐标
@@ -11,7 +12,8 @@ def click_on_screen(x, y, duration=0.2):
     - duration: 移动鼠标到指定位置所需的时间（秒）
     """
     pyautogui.moveTo(x, y, duration=duration)
-    pyautogui.click()
+    pyautogui.click(button='left')
+
 
 def enter_room(room_position):
     """
@@ -29,6 +31,7 @@ def enter_room(room_position):
 
     # 根据需要，等待进入房间的动作完成
     time.sleep(1)  # 可根据实际情况调整等待时间
+
 
 # 这段代码提供了自动点击屏幕上特定位置的功能。enter_room函数接收一个表示房间名位置的四元组
 #（由image_recognition.py模块提供），计算中心点坐标，并在该位置执行点击操作，从而模拟用户
