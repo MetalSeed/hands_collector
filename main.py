@@ -19,8 +19,7 @@ import threading
 import time
 # 全局停止事件，用于优雅地中断线程
 stop_event = threading.Event()
-mouse_lock = Lock()
-gui_lock = Lock()
+pyautogui_lock = Lock()
 
 import os
 
@@ -53,19 +52,20 @@ class BaseOperation:
         return icon_path
 
     def findclick_icon_in_window(self, icon_name):
-        global gui_lock
-        global mouse_lock
-        with gui_lock:  # 使用 with 语句自动获取和释放锁
+        global pyautogui_lock
+        with pyautogui_lock:  # 使用 with 语句自动获取和释放锁
+            time.sleep(2)
             coord = ir.find_icon_in_window(self.window['title'], self.icon_full_name(icon_name))
         if coord:
-            with mouse_lock:  # 使用 with 语句自动获取和释放锁
+            with pyautogui_lock:  # 使用 with 语句自动获取和释放锁
+                time.sleep(2)
                 auto.click_on_screen(coord[0], coord[1])
                 # print(f"Clicked at coordinates: {coord[0]}, {coord[1]}")
 
             print(f"在窗口 {self.window['title']} 中点击了图标 {icon_name}")
             return True
         else:
-            print(f"在窗口 {self.window['title']} 中没有找到图标 {icon_name}")
+            print(f"在窗口 {self.window['title']} 中没有图标 {icon_name}")
             return False
 
 class WePokerOperation(BaseOperation):
@@ -110,7 +110,7 @@ class WePokerOperation(BaseOperation):
         result = self.findclick_icon_in_window('back_to_lobby.png')
         time.sleep(10)
         if result: 
-            print('离开游戏')
+            print('点击了返回大厅')
             return True
         else:
             return False
