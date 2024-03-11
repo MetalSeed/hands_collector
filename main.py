@@ -5,7 +5,7 @@
 # └── automation.py            # 自动化操作模块
 
 # 先开H2N，再开模拟器，最后运行脚本
-# 调整窗口之后要修改odd_offset_menu2end
+# h2n，vscode 都要用管理员权限运行，否则不能操作鼠标
 
 
 import datetime
@@ -13,11 +13,14 @@ import datetime
 import numpy as np
 import image_recognition as ir
 import automation as auto
+from threading import Lock
 
 import threading
 import time
 # 全局停止事件，用于优雅地中断线程
 stop_event = threading.Event()
+mouse_lock = Lock()
+gui_lock = Lock()
 
 import os
 
@@ -50,10 +53,14 @@ class BaseOperation:
         return icon_path
 
     def findclick_icon_in_window(self, icon_name):
-        coord = ir.find_icon_in_window(self.window['title'], self.icon_full_name(icon_name))
+        global gui_lock
+        global mouse_lock
+        with gui_lock:  # 使用 with 语句自动获取和释放锁
+            coord = ir.find_icon_in_window(self.window['title'], self.icon_full_name(icon_name))
         if coord:
-            auto.click_on_screen(coord[0], coord[1])
-            print(f"Clicked at coordinates: {coord[0]}, {coord[1]}")
+            with mouse_lock:  # 使用 with 语句自动获取和释放锁
+                auto.click_on_screen(coord[0], coord[1])
+                # print(f"Clicked at coordinates: {coord[0]}, {coord[1]}")
 
             print(f"在窗口 {self.window['title']} 中点击了图标 {icon_name}")
             return True
