@@ -71,25 +71,29 @@ class WePokerOperation(BaseOperation):
             if stop_event.is_set():
                 break
             time.sleep(60*2)
-        while gaming_flag:
+        start_time = time.time()
+        while gaming_flag and time.time() - start_time <= 60*60:  # 60 minutes limit
             gaming_flag = not self.quit_game()
+            time.sleep(60*2)
             if stop_event.is_set():
                 break
-            time.sleep(60*2)
 
     def reset(self):
         for i in range(3):
             self.findclick_icon_in_window('close.png')
-            time.sleep(3)
+            time.sleep(5)
         self.findclick_icon_in_window('refresh1.png')
-        time.sleep(3)
+        time.sleep(5)
         self.findclick_icon_in_window('refresh2.png')
-        time.sleep(3)
+        time.sleep(5)
 
     def join_game(self):
         result = self.findclick_icon_in_window('dezhou.png')
         time.sleep(10)
-        print(f"在窗口 {self.window['title']} 中加入了游戏")
+        if result:
+            print(f"在窗口 {self.window['title']} 中加入了游戏")
+        else:
+            print(f"在窗口 {self.window['title']} 中没有找到游戏")
         return result
 
     def quit_game(self):
