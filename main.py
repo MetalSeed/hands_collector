@@ -73,17 +73,17 @@ class WePokerOperation(BaseOperation):
     def perform_operations(self): # 循环自动化
         gaming_flag = False
         start_time = time.time()
-        while not gaming_flag and time.time() - start_time <= 60*60:  # 60 minutes limit
+        while not gaming_flag and time.time() - start_time <= 60*20:  # 20 minutes limit
             self.reset()
             gaming_flag = self.join_game()
             time.sleep(60*2)
             if stop_event.is_set():
                 break
-        
+            
         start_time = time.time()
-        gaming_flag = True
-        while gaming_flag and time.time() - start_time <= 60*60:  # 60 minutes limit
-            gaming_flag = not self.quit_game()
+        while time.time() - start_time <= 60*60:  # 60 minutes limit
+            end_flag = self.quit_game()
+            if end_flag: break
             time.sleep(60*2)
             if stop_event.is_set():
                 break
