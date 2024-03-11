@@ -19,6 +19,9 @@ def find_icon_in_window(window_title, icon_image_path):
         try:
             # 获取窗口
             window = gw.getWindowsWithTitle(window_title)[0]
+            if window is not None:
+                window.activate() # 确保窗口是激活的
+                time.sleep(2) # 等待窗口被激活，可能需要根据实际情况调整等待时间
             # 检查窗口是否最小化或不可见
             if window is None or not window.isActive or window.isMinimized:
                 print("窗口 '{}' 已最小化或不可见".format(window_title))
