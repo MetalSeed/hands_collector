@@ -120,9 +120,9 @@ def operate_on_window(window): # 线程函数
 
 def main():
     windows = [
-        {'title': '雷电模拟器', 'datapath': 'icon', 'platform': 'wpk', 'param': 1}, # 0518 一龙 深圳湾
-        # {'title': '雷电模拟器-1', 'datapath': 'icon', 'platform': 'wpk', 'param': 2}, # 0051 大马总 龙争虎斗
-        # {'title': '雷电模拟器-2', 'datapath': 'icon', 'platform': 'wpk', 'param': 3} # 0051 大马总 龙争虎斗
+        {'title': '雷电模拟器', 'datapath': 'icon', 'platform': 'wpk', 'param': 1}, # 3274 旺宝宝 深圳湾
+        # {'title': '雷电模拟器-1', 'datapath': 'icon', 'platform': 'wpk', 'param': 2}, # 0051 女老师 龙争虎斗
+        {'title': '雷电模拟器-2', 'datapath': 'icon', 'platform': 'wpk', 'param': 3} # 9849 一龙马 龙争虎斗
     ]
 
     threads = []
