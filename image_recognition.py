@@ -19,17 +19,24 @@ def find_icon_in_window(window_title, icon_image_path):
         try:
             # 获取窗口
             window = gw.getWindowsWithTitle(window_title)[0]
-            if window is not None:
+            # 检查窗口是否最小化或不可见
+            if window is None:
+                print("窗口 '{}' 不存在".format(window_title))
+                time.sleep(10)  # 每10秒检查一次
+            elif not window.isActive or window.isMinimized:
+                print("窗口 '{}' 已最小化或不可见".format(window_title))
+                try:
+                    window.restore()
+                    time.sleep(2) # 等待窗口被恢复，可能需要根据实际情况调整等待时间
+                except gw.PyGetWindowException as e:
+                    print(f"恢复窗口时发生错误: {e}")
+                    # 根据需要添加额外的处理逻辑，例如记录日志等
                 try:
                     window.activate()
                     time.sleep(2) # 等待窗口被激活，可能需要根据实际情况调整等待时间
                 except gw.PyGetWindowException as e:
                     print(f"激活窗口时发生错误: {e}")
-                    # 根据需要添加额外的处理逻辑，例如恢复窗口、记录日志等
-            # 检查窗口是否最小化或不可见
-            if window is None or not window.isActive or window.isMinimized:
-                print("窗口 '{}' 已最小化或不可见".format(window_title))
-                time.sleep(10)  # 每10秒检查一次
+                    # 根据需要添加额外的处理逻辑，例如记录日志等
             else:
                 break  # 找到窗口并且窗口处于活动状态，跳出循环
         except IndexError:
