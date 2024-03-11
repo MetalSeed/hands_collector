@@ -62,7 +62,7 @@ def find_icon_in_window(window_title, icon_image_path):
 
         return x, y
     else:
-        print("在窗口 '{}' 中没有找到图标 '{}'".format(window_title, os.path.basename(icon_image_path)))
+        print("IR 在窗口 {} 中没有找到图标 {}".format(window_title, os.path.basename(icon_image_path)))
         return 0
 
 def capture_screen(region=None):

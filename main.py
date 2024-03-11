@@ -54,19 +54,18 @@ class BaseOperation:
     def findclick_icon_in_window(self, icon_name):
         global pyautogui_lock
         with pyautogui_lock:  # 使用 with 语句自动获取和释放锁
-            time.sleep(2)
             coord = ir.find_icon_in_window(self.window['title'], self.icon_full_name(icon_name))
-        if coord:
-            with pyautogui_lock:  # 使用 with 语句自动获取和释放锁
+            if coord:
                 time.sleep(2)
                 auto.click_on_screen(coord[0], coord[1])
                 # print(f"Clicked at coordinates: {coord[0]}, {coord[1]}")
-
-            print(f"在窗口 {self.window['title']} 中点击了图标 {icon_name}")
-            return True
-        else:
-            print(f"在窗口 {self.window['title']} 中没有图标 {icon_name}")
-            return False
+                time.sleep(2)
+                print(f"在窗口 {self.window['title']} 中点击了图标 {icon_name}")
+                return True
+            else:
+                print(f"在窗口 {self.window['title']} 中没有图标 {icon_name}")
+                return False
+            
 
 class WePokerOperation(BaseOperation):
     def __init__(self, window):
@@ -79,17 +78,17 @@ class WePokerOperation(BaseOperation):
         while not gaming_flag and time.time() - start_time <= 60*60:  # 20 minutes limit
             self.reset()
             gaming_flag = self.join_game()
-            time.sleep(60*2)
-            if stop_event.is_set():
-                break
+            time.sleep(60)
+            if stop_event.is_set(): break
+            time.sleep(60)
             
         start_time = time.time()
         while time.time() - start_time <= 60*60:  # 60 minutes limit
             end_flag = self.quit_game()
             if end_flag: break
-            time.sleep(60*2)
-            if stop_event.is_set():
-                break
+            time.sleep(60)
+            if stop_event.is_set(): break
+            time.sleep(60)
 
     def reset(self):
         for i in range(3):
