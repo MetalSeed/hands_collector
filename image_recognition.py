@@ -4,6 +4,7 @@ from pytesseract import Output
 import pyautogui
 import pygetwindow as gw
 import os
+import time
 
 def find_icon_in_window(window_title, icon_image_path):
     """
@@ -13,20 +14,26 @@ def find_icon_in_window(window_title, icon_image_path):
     - 如果成功找到图标，返回最下面的图标中心的坐标（x, y）
     - 如果没有找到图标，或者窗口不可见或已最小化，返回0
     """
-    try:
-        # 获取窗口
-        window = gw.getWindowsWithTitle(window_title)[0]
-    except IndexError:
-        print("没有找到标题为 '{}' 的窗口".format(window_title))
-        return 0
+    start_time = time.time()
+    while True:
+        try:
+            # 获取窗口
+            window = gw.getWindowsWithTitle(window_title)[0]
+            # 检查窗口是否最小化或不可见
+            if window is None or not window.isActive or window.isMinimized:
+                print("窗口 '{}' 已最小化或不可见".format(window_title))
+                time.sleep(10)  # 每10秒检查一次
+            else:
+                break  # 找到窗口并且窗口处于活动状态，跳出循环
+        except IndexError:
+            print("没有找到标题为 '{}' 的窗口".format(window_title))
+            time.sleep(10)  # 每10秒检查一次
 
-    # 检查窗口是否最小化或不可见
-    if window.isMinimized:
-        print("窗口 '{}' 已最小化".format(window_title))
-        return 0
-    if not window.isVisible:
-        print("窗口 '{}' 不可见".format(window_title))
-        return 0
+        # 超过60秒还是没找到窗口，或者窗口被遮挡，就return 0
+        if time.time() - start_time > 3 * 60:
+            print("超过一分钟还未找到窗口 '{}' 或窗口被遮挡".format(window_title))
+            return 0
+
 
     # 在窗口中查找所有匹配的图标
     icon_positions = list(pyautogui.locateAllOnScreen(icon_image_path, region=(window.left, window.top, window.width, window.height)))
