@@ -69,11 +69,14 @@ class BaseOperation:
             return False
 
 class WePokerOperation(BaseOperation):
+    def __init__(self, window):
+        self.window = window
+
     """对WePoker游戏窗口执行自动化操作。"""
     def perform_operations(self): # 循环自动化
         gaming_flag = False
         start_time = time.time()
-        while not gaming_flag and time.time() - start_time <= 60*20:  # 20 minutes limit
+        while not gaming_flag and time.time() - start_time <= 60*60:  # 20 minutes limit
             self.reset()
             gaming_flag = self.join_game()
             time.sleep(60*2)
@@ -96,6 +99,8 @@ class WePokerOperation(BaseOperation):
         time.sleep(5)
         self.findclick_icon_in_window('refresh2.png')
         time.sleep(5)
+        print(f"在窗口 {self.window['title']} 完成刷新")
+
 
     def join_game(self):
         result = self.findclick_icon_in_window('dezhou.png')
@@ -110,7 +115,7 @@ class WePokerOperation(BaseOperation):
         result = self.findclick_icon_in_window('back_to_lobby.png')
         time.sleep(10)
         if result: 
-            print('点击了返回大厅')
+            print(f"在窗口 {self.window['title']} 点击了返回大厅")
             return True
         else:
             return False
