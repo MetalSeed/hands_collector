@@ -52,20 +52,18 @@ class BaseOperation:
         return icon_path
 
     def findclick_icon_in_window(self, icon_name):
-        global pyautogui_lock
-        with pyautogui_lock:  # 使用 with 语句自动获取和释放锁
-            coord = ir.find_icon_in_window(self.window['title'], self.icon_full_name(icon_name))
-            if coord:
-                time.sleep(2)
-                auto.click_on_screen(coord[0], coord[1])
-                # print(f"Clicked at coordinates: {coord[0]}, {coord[1]}")
-                time.sleep(2)
-                print(f"在窗口 {self.window['title']} 中点击了图标 {icon_name}")
-                return True
-            else:
-                print(f"在窗口 {self.window['title']} 中没有图标 {icon_name}")
-                return False
-            
+        coord = ir.find_icon_in_window(self.window['title'], self.icon_full_name(icon_name))
+        if coord:
+            time.sleep(2)
+            auto.click_on_screen(coord[0], coord[1])
+            # print(f"Clicked at coordinates: {coord[0]}, {coord[1]}")
+            time.sleep(2)
+            print(f"在窗口 {self.window['title']} 中点击了图标 {icon_name}")
+            return True
+        else:
+            print(f"在窗口 {self.window['title']} 中没有图标 {icon_name}")
+            return False
+        
 
 class WePokerOperation(BaseOperation):
     def __init__(self, window):
@@ -73,18 +71,21 @@ class WePokerOperation(BaseOperation):
 
     """对WePoker游戏窗口执行自动化操作。"""
     def perform_operations(self): # 循环自动化
+        global pyautogui_lock
         gaming_flag = False
         start_time = time.time()
         while not gaming_flag and time.time() - start_time <= 60*60:  # 20 minutes limit
-            self.reset()
-            gaming_flag = self.join_game()
+            with pyautogui_lock:  # 使用 with 语句自动获取和释放锁
+                self.reset()
+                gaming_flag = self.join_game()
             time.sleep(60)
             if stop_event.is_set(): break
             time.sleep(60)
             
         start_time = time.time()
         while time.time() - start_time <= 60*60:  # 60 minutes limit
-            end_flag = self.quit_game()
+            with pyautogui_lock:  # 使用 with 语句自动获取和释放锁
+                end_flag = self.quit_game()
             if end_flag: break
             time.sleep(60)
             if stop_event.is_set(): break
