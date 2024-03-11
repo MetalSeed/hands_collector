@@ -5,12 +5,9 @@
 # └── automation.py            # 自动化操作模块
 
 # 先开H2N，再开模拟器，最后运行脚本
-# H2N，脚本 都要管理员权限运行
 # 调整窗口之后要修改odd_offset_menu2end
 
 
-# 假设的 image_recognition 和 automation 模块
-# 实际使用时，请替换为你的具体实现
 import datetime
 
 import numpy as np
@@ -23,7 +20,6 @@ import time
 stop_event = threading.Event()
 
 import os
-
 
 class BaseOperation:
     """所有操作类的基类，定义了操作的基本接口"""
@@ -58,27 +54,26 @@ class BaseOperation:
         if coord:
             auto.click_on_screen(coord[0], coord[1])
             print(f"在窗口 {self.window['title']} 中点击了图标 {icon_name}")
-            return 1
+            return True
         else:
             print(f"在窗口 {self.window['title']} 中没有找到图标 {icon_name}")
-            return 0
+            return False
 
 class WePokerOperation(BaseOperation):
     """对WePoker游戏窗口执行自动化操作。"""
     def perform_operations(self): # 循环自动化
-        game_flag = 0
-        while not game_flag:
+        gaming_flag = False
+        while not gaming_flag:
             self.reset()
-            game_flag = self.join_game()
+            gaming_flag = self.join_game()
             if stop_event.is_set():
                 break
-            time.sleep(60*1)
-        game_flag = 0
-        while not game_flag:
-            game_flag = self.quit_game()
+            time.sleep(60*20)
+        while gaming_flag:
+            gaming_flag = not self.quit_game()
             if stop_event.is_set():
                 break
-            time.sleep(60*1)
+            time.sleep(60*3)
 
     def reset(self):
         for i in range(3):
@@ -96,22 +91,13 @@ class WePokerOperation(BaseOperation):
         return result
 
     def quit_game(self):
-
-        flag = 0
-        flag += self.findclick_icon_in_window('end.png')
-        time.sleep(5)
-
-
-        flag += self.findclick_icon_in_window('menu.png')
-        time.sleep(5)
-
-        flag += self.findclick_icon_in_window('quit.png')
-        time.sleep(5)
-        
-        if flag == 3:
-            print(f"在窗口 {self.window['title']} 中离开了游戏")
-            return 1
-        else: return 0
+        result = self.findclick_icon_in_window('back_to_lobby.png')
+        time.sleep(10)
+        if result: 
+            print('离开游戏')
+            return True
+        else:
+            return False
         
 def operate_on_window(window): # 线程函数
     # 根据窗口标题选择操作类
@@ -128,10 +114,9 @@ def operate_on_window(window): # 线程函数
 
 def main():
     windows = [
-        {'title': '窗口1 - GameOne', 'region': (0, 0, 800, 600), 'datapath': 'icon', 'platform': 'wpk', 'param': 1}
-        # ,
-        # {'title': '窗口2 - GameTwo', 'region': (800, 0, 800, 600), 'param': 24, 'data_path': '/path/to/data2'},
-        # {'title': '窗口3 - GameThree', 'region': (1600, 0, 800, 600), 'param': 66, 'data_path': '/path/to/data3'}
+        {'title': '雷电模拟器', 'region': (0, 0, 800, 600), 'datapath': 'icon', 'platform': 'wpk', 'param': 1}, # 0518 一龙 深圳湾
+        # {'title': '雷电模拟器-1', 'region': (800, 0, 800, 600),'datapath': 'icon', 'platform': 'wpk', 'param': 2}, # 0051 大马总 龙争虎斗
+        # {'title': '雷电模拟器-2', 'region': (1600, 0, 800, 600), 'datapath': 'icon', 'platform': 'wpk', 'param': 3} # 0051 大马总 龙争虎斗
     ]
 
     threads = []

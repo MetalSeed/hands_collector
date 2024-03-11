@@ -5,20 +5,9 @@ import pyautogui
 import pygetwindow as gw
 import os
 
-# 指定Tesseract的安装路径
-# 例如，Windows上可能是'C:\\Program Files\\Tesseract-OCR\\tesseract.exe'
-# Linux上可能是'/usr/bin/tesseract'
-# macOS上可能是'/usr/local/bin/tesseract'
-pytesseract.pytesseract.tesseract_cmd = r'<YOUR_TESSERACT_PATH>'
-
-
 def find_icon_in_window(window_title, icon_image_path):
     """
     在指定窗口中查找图标，并返回最下面的图标中心的坐标。
-
-    参数:
-    - window_title: 窗口的标题
-    - icon_image_path: 图标图片的路径
 
     返回值:
     - 如果成功找到图标，返回最下面的图标中心的坐标（x, y）
@@ -56,16 +45,6 @@ def find_icon_in_window(window_title, icon_image_path):
         return 0
 
 def capture_screen(region=None):
-    """
-    捕获屏幕的指定区域。
-    如果没有指定区域，就捕获整个屏幕。
-
-    参数:
-    - region: (x, y, width, height)
-
-    返回:
-    - 截图的图像对象
-    """
     return pyautogui.screenshot(region=region)
 
 def find_room_names(image, pattern):
