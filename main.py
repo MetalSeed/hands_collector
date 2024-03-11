@@ -78,14 +78,14 @@ class WePokerOperation(BaseOperation):
     def reset(self):
         for i in range(3):
             self.findclick_icon_in_window('close.png')
-            time.sleep(1)
+            time.sleep(3)
         self.findclick_icon_in_window('refresh1.png')
-        time.sleep(1)
+        time.sleep(3)
         self.findclick_icon_in_window('refresh2.png')
-        time.sleep(1)
+        time.sleep(3)
 
     def join_game(self):
-        result = self.findclick_icon_in_window('join_game_dezhou.png')
+        result = self.findclick_icon_in_window('dezhou.png')
         time.sleep(10)
         print(f"在窗口 {self.window['title']} 中加入了游戏")
         return result

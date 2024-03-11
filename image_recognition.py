@@ -36,7 +36,7 @@ def find_icon_in_window(window_title, icon_image_path):
 
 
     # 在窗口中查找所有匹配的图标
-    icon_positions = list(pyautogui.locateAllOnScreen(icon_image_path, region=(window.left, window.top, window.width, window.height)))
+    icon_positions = list(pyautogui.locateAllOnScreen(icon_image_path, region=(window.left, window.top, window.width, window.height), confidence=0.8))
 
     if icon_positions:
         # 选择最后一个图标
