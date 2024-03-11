@@ -53,6 +53,8 @@ class BaseOperation:
         coord = ir.find_icon_in_window(self.window['title'], self.icon_full_name(icon_name))
         if coord:
             auto.click_on_screen(coord[0], coord[1])
+            print(f"Clicked at coordinates: {coord[0]}, {coord[1]}")
+
             print(f"在窗口 {self.window['title']} 中点击了图标 {icon_name}")
             return True
         else:
@@ -68,12 +70,12 @@ class WePokerOperation(BaseOperation):
             gaming_flag = self.join_game()
             if stop_event.is_set():
                 break
-            time.sleep(60*20)
+            time.sleep(60*2)
         while gaming_flag:
             gaming_flag = not self.quit_game()
             if stop_event.is_set():
                 break
-            time.sleep(60*3)
+            time.sleep(60*2)
 
     def reset(self):
         for i in range(3):
@@ -114,9 +116,9 @@ def operate_on_window(window): # 线程函数
 
 def main():
     windows = [
-        {'title': '雷电模拟器', 'region': (0, 0, 800, 600), 'datapath': 'icon', 'platform': 'wpk', 'param': 1}, # 0518 一龙 深圳湾
-        # {'title': '雷电模拟器-1', 'region': (800, 0, 800, 600),'datapath': 'icon', 'platform': 'wpk', 'param': 2}, # 0051 大马总 龙争虎斗
-        # {'title': '雷电模拟器-2', 'region': (1600, 0, 800, 600), 'datapath': 'icon', 'platform': 'wpk', 'param': 3} # 0051 大马总 龙争虎斗
+        {'title': '雷电模拟器', 'datapath': 'icon', 'platform': 'wpk', 'param': 1}, # 0518 一龙 深圳湾
+        # {'title': '雷电模拟器-1', 'datapath': 'icon', 'platform': 'wpk', 'param': 2}, # 0051 大马总 龙争虎斗
+        # {'title': '雷电模拟器-2', 'datapath': 'icon', 'platform': 'wpk', 'param': 3} # 0051 大马总 龙争虎斗
     ]
 
     threads = []
