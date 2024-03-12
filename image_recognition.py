@@ -16,37 +16,49 @@ def find_icon_in_window(window_title, icon_image_path):
     """
     start_time = time.time()
     while True:
+        # 超过60秒还是没找到窗口，或者窗口被遮挡，就return 0
+        if time.time() - start_time > 3 * 60:
+            print("超过3分钟还未找到窗口 '{}' 或窗口被遮挡".format(window_title))
+            return 0
         try:
             # 获取窗口
-            window = gw.getWindowsWithTitle(window_title)[0]
-            # 检查窗口是否最小化或不可见
-            if window is None:
-                print("窗口 '{}' 不存在".format(window_title))
+            windows = gw.getWindowsWithTitle(window_title)
+            if not windows:
+                print("没有找到标题为 '{}' 的窗口".format(window_title))
                 time.sleep(10)  # 每10秒检查一次
-            elif not window.isActive or window.isMinimized:
-                print("窗口 '{}' 已最小化或不可见".format(window_title))
+                continue
+
+            window = windows[0]
+
+            # 检查窗口是否最小化
+            if window.isMinimized:
+                print("窗口 '{}' 已最小化".format(window_title))
                 try:
                     window.restore()
                     time.sleep(2) # 等待窗口被恢复，可能需要根据实际情况调整等待时间
                 except gw.PyGetWindowException as e:
                     print(f"恢复窗口时发生错误: {e}")
                     # 根据需要添加额外的处理逻辑，例如记录日志等
+                continue
+
+            # 检查窗口是否不可见
+            if not window.isActive:
+                print("窗口 '{}' 不是活动的".format(window_title))
                 try:
                     window.activate()
                     time.sleep(2) # 等待窗口被激活，可能需要根据实际情况调整等待时间
                 except gw.PyGetWindowException as e:
                     print(f"激活窗口时发生错误: {e}")
                     # 根据需要添加额外的处理逻辑，例如记录日志等
-            else:
-                break  # 找到窗口并且窗口处于活动状态，跳出循环
+                continue
+
+            break  # 找到窗口并且窗口处于活动状态，跳出循环
+
         except IndexError:
             print("没有找到标题为 '{}' 的窗口".format(window_title))
             time.sleep(10)  # 每10秒检查一次
 
-        # 超过60秒还是没找到窗口，或者窗口被遮挡，就return 0
-        if time.time() - start_time > 3 * 60:
-            print("超过3分钟还未找到窗口 '{}' 或窗口被遮挡".format(window_title))
-            return 0
+
 
     # 在窗口中查找所有匹配的图标
     print(f"{window_title} 窗口坐标:{window.left}, {window.top}, {window.width}, {window.height}")
