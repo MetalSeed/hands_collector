@@ -55,8 +55,8 @@ class BaseOperation:
         coord = ir.find_icon_in_window(self.window['title'], self.icon_full_name(icon_name))
         if coord:
             time.sleep(2)
+            print(f"Clicked at coordinates: {coord[0]}, {coord[1]}")
             auto.click_on_screen(coord[0], coord[1])
-            # print(f"Clicked at coordinates: {coord[0]}, {coord[1]}")
             time.sleep(2)
             print(f"在窗口 {self.window['title']} 中点击了图标 {icon_name}")
             return True
@@ -134,7 +134,7 @@ def operate_on_window(window): # 线程函数
 
 
 def main():
-    time.sleep(60*2)  # 等待一段时间，确保窗口已经打开
+    # time.sleep(60*2)  # 等待一段时间，确保窗口已经打开
     windows = [
         {'title': '雷电模拟器', 'datapath': 'icon', 'platform': 'wpk', 'param': 1}, # 3274 旺宝宝 深圳湾
         # {'title': '雷电模拟器-1', 'datapath': 'icon', 'platform': 'wpk', 'param': 2}, # 0051 女老师 龙争虎斗
