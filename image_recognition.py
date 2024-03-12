@@ -6,6 +6,46 @@ import pygetwindow as gw
 import os
 import time
 
+from pywinauto.application import Application
+
+def find_and_click_icon_in_window_with_pywinauto(window_title, icon_image_path):
+    """
+    使用pywinauto在指定窗口中查找图标，并使用pyautogui点击图标中心。
+    """
+    app = Application(backend="uia").connect(title=window_title, timeout=60)
+    try:
+        window = app[window_title]
+        window.wait('visible', timeout=60)  # 等待窗口变为可见
+
+        if window.is_minimized():
+            window.restore()
+        window.set_focus()
+        time.sleep(2)  # 给予时间让窗口响应
+
+        # 获取窗口的位置信息
+        rect = window.rectangle()
+        print(f"{window_title} 窗口坐标: {rect.left}, {rect.top}, {rect.width()}, {rect.height()}")
+
+        # 使用pyautogui在指定区域内查找图标
+        icon_positions = list(pyautogui.locateAllOnScreen(icon_image_path, region=(rect.left, rect.top, rect.width(), rect.height()), confidence=0.9))
+
+        if icon_positions:
+            # 选择最后一个图标
+            icon_position = icon_positions[-1]
+            # 计算图标中心的坐标
+            x = icon_position.left + icon_position.width / 2
+            y = icon_position.top + icon_position.height / 2
+            pyautogui.click(x, y)
+            print(f"在窗口 '{window_title}' 中点击了图标 {os.path.basename(icon_image_path)}")
+            return True
+        else:
+            print(f"在窗口 '{window_title}' 中没有找到图标 {os.path.basename(icon_image_path)}")
+            return False
+    except Exception as e:
+        print(f"操作时发生错误: {e}")
+        return False
+
+
 def find_icon_in_window(window_title, icon_image_path):
     """
     在指定窗口中查找图标，并返回最下面的图标中心的坐标。
@@ -35,10 +75,11 @@ def find_icon_in_window(window_title, icon_image_path):
                 print("窗口 '{}' 已最小化".format(window_title))
                 try:
                     window.restore()
-                    time.sleep(2) # 等待窗口被恢复，可能需要根据实际情况调整等待时间
+                    time.sleep(5) # 等待窗口被恢复，可能需要根据实际情况调整等待时间
                 except gw.PyGetWindowException as e:
                     print(f"恢复窗口时发生错误: {e}")
                     # 根据需要添加额外的处理逻辑，例如记录日志等
+                time.sleep(10)  # 每10秒检查一次
                 continue
 
             # 检查窗口是否不可见
@@ -46,10 +87,13 @@ def find_icon_in_window(window_title, icon_image_path):
                 print("窗口 '{}' 不是活动的".format(window_title))
                 try:
                     window.activate()
-                    time.sleep(2) # 等待窗口被激活，可能需要根据实际情况调整等待时间
+                    time.sleep(5) # 等待窗口被激活，可能需要根据实际情况调整等待时间
+                    window.set_focus()
+                    time.sleep(5) # 等待窗口被设置为焦点，可能需要根据实际情况调整等待时间
                 except gw.PyGetWindowException as e:
                     print(f"激活窗口时发生错误: {e}")
                     # 根据需要添加额外的处理逻辑，例如记录日志等
+                time.sleep(10)  # 每10秒检查一次
                 continue
 
             break  # 找到窗口并且窗口处于活动状态，跳出循环
@@ -74,7 +118,7 @@ def find_icon_in_window(window_title, icon_image_path):
 
         return x, y
     else:
-        print("IR 在窗口 {} 中没有找到图标 {}".format(window_title, os.path.basename(icon_image_path)))
+        # print("IR 在窗口 {} 中没有找到图标 {}".format(window_title, os.path.basename(icon_image_path)))
         return 0
 
 def capture_screen(region=None):

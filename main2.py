@@ -70,14 +70,14 @@ class WePokerOperation(BaseOperation):
     """对WePoker游戏窗口执行自动化操作。"""
     def perform_operations(self): # 循环自动化
         start_time = time.time()
-        while time.time() - start_time <= 60*3:  # 3 minutes limit
+        while time.time() - start_time <= 60*2:  # minutes limit
             self.reset()
             game_flage = self.join_game()
             if game_flage: break
             time.sleep(60)
             
         start_time = time.time()
-        while time.time() - start_time <= 60*3:  # 3 minutes limit
+        while time.time() - start_time <= 60*2:  # minutes limit
             end_flag = self.quit_game()
             if end_flag: break
             time.sleep(60)
@@ -135,11 +135,14 @@ def operate_on_windows(windows):
         time.sleep(10)
 
 def main():
+    # 窗口信息
     windows = [
-        {'title': '雷电模拟器', 'datapath': 'icon', 'platform': 'wpk', 'param': 1},
-        {'title': '雷电模拟器-2', 'datapath': 'icon', 'platform': 'wpk', 'param': 3}
+        # {'title': '雷电模拟器', 'datapath': 'icon', 'platform': 'wpk', 'param': 1}, # 3274 旺宝宝 深圳湾
+        # {'title': '雷电模拟器-1', 'datapath': 'icon', 'platform': 'wpk', 'param': 2}, # 0051
+        {'title': '雷电模拟器-2', 'datapath': 'icon', 'platform': 'wpk', 'param': 3},# 9849 一龙马 龙争虎斗
     ]
 
+    time.sleep(60)  # 等待一段时间，确保窗口已经打开
     # 调用单线程操作函数
     while True:
         operate_on_windows(windows)
