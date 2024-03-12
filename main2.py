@@ -70,7 +70,7 @@ class WePokerOperation(BaseOperation):
     """对WePoker游戏窗口执行自动化操作。"""
     def perform_operations(self): # 循环自动化
         start_time = time.time()
-        while time.time() - start_time <= 60*3:  # 5 minutes limit
+        while time.time() - start_time <= 60*3:  # 3 minutes limit
             self.reset()
             game_flage = self.join_game()
             if game_flage: break
