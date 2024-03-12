@@ -72,24 +72,42 @@ class WePokerOperation(BaseOperation):
     """对WePoker游戏窗口执行自动化操作。"""
     def perform_operations(self): # 循环自动化
         global pyautogui_lock
-        gaming_flag = False
+        
         start_time = time.time()
-        while not gaming_flag and time.time() - start_time <= 60*60:  # 20 minutes limit
+        while time.time() - start_time <= 60*2:  # minutes limit
             with pyautogui_lock:  # 使用 with 语句自动获取和释放锁
                 self.reset()
-                gaming_flag = self.join_game()
-            time.sleep(60)
+                game_flage = self.join_game()
+            if game_flage: break
             if stop_event.is_set(): break
             time.sleep(60)
             
         start_time = time.time()
-        while time.time() - start_time <= 60*60:  # 60 minutes limit
+        while time.time() - start_time <= 60*2:  # minutes limit
             with pyautogui_lock:  # 使用 with 语句自动获取和释放锁
                 end_flag = self.quit_game()
             if end_flag: break
-            time.sleep(60)
             if stop_event.is_set(): break
             time.sleep(60)
+        
+        # gaming_flag = False
+        # start_time = time.time()
+        # while not gaming_flag and time.time() - start_time <= 60*5:  # 60 minutes limit
+        #     with pyautogui_lock:  # 使用 with 语句自动获取和释放锁
+        #         self.reset()
+        #         gaming_flag = self.join_game()
+        #     time.sleep(60)
+        #     if stop_event.is_set(): break
+        #     time.sleep(60)
+            
+        # start_time = time.time()
+        # while time.time() - start_time <= 60*60:  # 60 minutes limit
+        #     with pyautogui_lock:  # 使用 with 语句自动获取和释放锁
+        #         end_flag = self.quit_game()
+        #     if end_flag: break
+        #     time.sleep(60)
+        #     if stop_event.is_set(): break
+        #     time.sleep(60)
 
     def reset(self):
         for i in range(2):
