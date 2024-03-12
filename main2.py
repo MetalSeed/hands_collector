@@ -137,7 +137,7 @@ def operate_on_windows(windows):
 def main():
     # 窗口信息
     windows = [
-        # {'title': '雷电模拟器', 'datapath': 'icon', 'platform': 'wpk', 'param': 1}, # 3274 旺宝宝 深圳湾
+        {'title': '雷电模拟器', 'datapath': 'icon', 'platform': 'wpk', 'param': 1}, # 3274 旺宝宝 深圳湾
         # {'title': '雷电模拟器-1', 'datapath': 'icon', 'platform': 'wpk', 'param': 2}, # 0051
         {'title': '雷电模拟器-2', 'datapath': 'icon', 'platform': 'wpk', 'param': 3},# 9849 一龙马 龙争虎斗
     ]

@@ -88,7 +88,7 @@ def find_icon_in_window(window_title, icon_image_path):
                 try:
                     window.activate()
                     time.sleep(5) # 等待窗口被激活，可能需要根据实际情况调整等待时间
-                    window.set_focus()
+                    # window.set_focus()
                     time.sleep(5) # 等待窗口被设置为焦点，可能需要根据实际情况调整等待时间
                 except gw.PyGetWindowException as e:
                     print(f"激活窗口时发生错误: {e}")
