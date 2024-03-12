@@ -18,8 +18,6 @@ from threading import Lock
 import threading
 import time
 # 全局停止事件，用于优雅地中断线程
-stop_event = threading.Event()
-pyautogui_lock = Lock()
 
 import os
 
@@ -71,24 +69,17 @@ class WePokerOperation(BaseOperation):
 
     """对WePoker游戏窗口执行自动化操作。"""
     def perform_operations(self): # 循环自动化
-        global pyautogui_lock
-        gaming_flag = False
         start_time = time.time()
-        while not gaming_flag and time.time() - start_time <= 60*60:  # 20 minutes limit
-            with pyautogui_lock:  # 使用 with 语句自动获取和释放锁
-                self.reset()
-                gaming_flag = self.join_game()
-            time.sleep(60)
-            if stop_event.is_set(): break
+        while time.time() - start_time <= 60*3:  # 5 minutes limit
+            self.reset()
+            game_flage = self.join_game()
+            if game_flage: break
             time.sleep(60)
             
         start_time = time.time()
-        while time.time() - start_time <= 60*60:  # 60 minutes limit
-            with pyautogui_lock:  # 使用 with 语句自动获取和释放锁
-                end_flag = self.quit_game()
+        while time.time() - start_time <= 60*3:  # 3 minutes limit
+            end_flag = self.quit_game()
             if end_flag: break
-            time.sleep(60)
-            if stop_event.is_set(): break
             time.sleep(60)
 
     def reset(self):
@@ -120,49 +111,41 @@ class WePokerOperation(BaseOperation):
         else:
             return False
         
-def operate_on_window(window): # 线程函数
-    # 根据窗口标题选择操作类
-    if window.get('platform', '') == 'wpk':
-        operation = WePokerOperation(window)
-    elif window.get('platform', '') == 'other':
-        pass
+def operate_on_windows(windows):
+        for window in windows:
+            # 根据窗口标题选择操作类
+            if window.get('platform', '') == 'wpk':
+                operation = WePokerOperation(window)
+            elif window.get('platform', '') == 'other':
+                # 如果有其他平台的操作，可以在这里实现
+                pass
+            else:
+                continue
+            
+            try:
+                # 尝试执行操作
+                operation.perform_operations()
+            except Exception as e:
+                print(f"操作过程中出现错误: {e}")
 
-    # 执行操作直到收到停止信号
-    while not stop_event.is_set():
-        operation.perform_operations()
-        time.sleep(1)  # 等待一段时间再次执行，避免过于频繁
+            # 短暂等待后再处理下一个窗口，以避免单个窗口操作过于频繁
+            time.sleep(1)
 
+        # 在完成一轮窗口操作后，可适当增加等待时间
+        time.sleep(10)
 
 def main():
-    # time.sleep(60*2)  # 等待一段时间，确保窗口已经打开
     windows = [
-        {'title': '雷电模拟器', 'datapath': 'icon', 'platform': 'wpk', 'param': 1}, # 3274 旺宝宝 深圳湾
-        # {'title': '雷电模拟器-1', 'datapath': 'icon', 'platform': 'wpk', 'param': 2}, # 0051 女老师 龙争虎斗
-        {'title': '雷电模拟器-2', 'datapath': 'icon', 'platform': 'wpk', 'param': 3} # 9849 一龙马 龙争虎斗
+        {'title': '雷电模拟器', 'datapath': 'icon', 'platform': 'wpk', 'param': 1},
+        {'title': '雷电模拟器-2', 'datapath': 'icon', 'platform': 'wpk', 'param': 3}
     ]
 
-    threads = []
+    # 调用单线程操作函数
+    while True:
+        operate_on_windows(windows)
 
-    for window in windows:
-        # 为每个窗口创建一个线程
-        thread = threading.Thread(target=operate_on_window, args=(window,))
-        threads.append(thread)
-        thread.start()
-
-    try:
-        while any(t.is_alive() for t in threads):
-            time.sleep(0.1)
-    except KeyboardInterrupt:
-        print("程序被用户中断，正在停止所有线程...")
-        stop_event.set()  # 通知所有线程停止
-
-    for thread in threads:
-        thread.join()  # 确保所有线程已经优雅地停止
 
 if __name__ == "__main__":
     main()
-
-
-# 请注意，并行处理可能会导致资源竞争（比如同时操作鼠标和键盘），这在
 
 # 有时间可以优化成 颜色匹配 和坐标点击。
