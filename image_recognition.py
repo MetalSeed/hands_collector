@@ -48,8 +48,8 @@ def find_icon_in_window(window_title, icon_image_path):
             print("超过3分钟还未找到窗口 '{}' 或窗口被遮挡".format(window_title))
             return 0
 
-
     # 在窗口中查找所有匹配的图标
+    print(f"{window_title} 窗口坐标:{window.left}, {window.top}, {window.width}, {window.height}")
     icon_positions = list(pyautogui.locateAllOnScreen(icon_image_path, region=(window.left, window.top, window.width, window.height), confidence=0.9))
 
     if icon_positions:
