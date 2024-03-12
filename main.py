@@ -138,7 +138,7 @@ def main():
     windows = [
         {'title': '雷电模拟器', 'datapath': 'icon', 'platform': 'wpk', 'param': 1}, # 3274 旺宝宝 深圳湾
         # {'title': '雷电模拟器-1', 'datapath': 'icon', 'platform': 'wpk', 'param': 2}, # 0051 女老师 龙争虎斗
-        # {'title': '雷电模拟器-2', 'datapath': 'icon', 'platform': 'wpk', 'param': 3} # 9849 一龙马 龙争虎斗
+        {'title': '雷电模拟器-2', 'datapath': 'icon', 'platform': 'wpk', 'param': 3} # 9849 一龙马 龙争虎斗
     ]
 
     threads = []

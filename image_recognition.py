@@ -67,7 +67,7 @@ def find_icon_in_window(window_title, icon_image_path):
                 print("没有找到标题为 '{}' 的窗口".format(window_title))
                 time.sleep(10)  # 每10秒检查一次
                 continue
-
+            print(f"windows: {windows}")
             window = windows[0]
 
             # 检查窗口是否最小化
