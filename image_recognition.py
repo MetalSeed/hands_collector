@@ -6,45 +6,6 @@ import pygetwindow as gw
 import os
 import time
 
-# from pywinauto.application import Application
-
-# def find_and_click_icon_in_window_with_pywinauto(window_title, icon_image_path):
-#     """
-#     使用pywinauto在指定窗口中查找图标，并使用pyautogui点击图标中心。
-#     """
-#     app = Application(backend="uia").connect(title=window_title, timeout=60)
-#     try:
-#         window = app[window_title]
-#         window.wait('visible', timeout=60)  # 等待窗口变为可见
-
-#         if window.is_minimized():
-#             window.restore()
-#         window.set_focus()
-#         time.sleep(2)  # 给予时间让窗口响应
-
-#         # 获取窗口的位置信息
-#         rect = window.rectangle()
-#         print(f"{window_title} 窗口坐标: {rect.left}, {rect.top}, {rect.width()}, {rect.height()}")
-
-#         # 使用pyautogui在指定区域内查找图标
-#         icon_positions = list(pyautogui.locateAllOnScreen(icon_image_path, region=(rect.left, rect.top, rect.width(), rect.height()), confidence=0.9))
-
-#         if icon_positions:
-#             # 选择最后一个图标
-#             icon_position = icon_positions[-1]
-#             # 计算图标中心的坐标
-#             x = icon_position.left + icon_position.width / 2
-#             y = icon_position.top + icon_position.height / 2
-#             pyautogui.click(x, y)
-#             print(f"在窗口 '{window_title}' 中点击了图标 {os.path.basename(icon_image_path)}")
-#             return True
-#         else:
-#             print(f"在窗口 '{window_title}' 中没有找到图标 {os.path.basename(icon_image_path)}")
-#             return False
-#     except Exception as e:
-#         print(f"操作时发生错误: {e}")
-#         return False
-
 
 def find_icon_in_window(window_title, icon_image_path):
     """
@@ -120,6 +81,25 @@ def find_icon_in_window(window_title, icon_image_path):
     else:
         # print("IR 在窗口 {} 中没有找到图标 {}".format(window_title, os.path.basename(icon_image_path)))
         return 0
+
+
+def capture_save(window_title):
+    # 获取窗口
+    windows = gw.getWindowsWithTitle(window_title)
+    if not windows:
+        print("没有找到标题为 '{}' 的窗口".format(window_title))
+        return
+
+    window = windows[0]
+    # 截取屏幕
+    screenshot = pyautogui.screenshot(region=(window.left, window.top, window.width, window.height))
+    # 保存截图
+    script_dir = os.path.dirname(__file__)
+    file_name = f"{window_title}_{time.strftime('%Y%m%d%H%M%S')}.png"
+    save_path = os.path.join(script_dir, 'capture_save', file_name)
+    screenshot.save(save_path)
+    print(f"截图已保存到 {save_path}")
+
 
 def capture_screen(region=None):
     return pyautogui.screenshot(region=region)
