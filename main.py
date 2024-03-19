@@ -91,7 +91,7 @@ class WePokerOperation(BaseOperation):
             time.sleep(60)
             
             # 保存截图，用来抓UI样例
-            if game_flage: ir.capture_save(self.window['title'])
+            # if game_flage: ir.capture_save(self.window['title'])
         
 
     def reset(self):
