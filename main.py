@@ -95,6 +95,8 @@ class WePokerOperation(BaseOperation):
         
 
     def reset(self):
+        for i in range(2):
+            self.findclick_icon_in_window('tryagain.png')
         for i in range(3):
             self.findclick_icon_in_window('close.png')
             time.sleep(5)
