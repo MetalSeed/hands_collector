@@ -6,8 +6,9 @@ import pygetwindow as gw
 import os
 import time
 
+debug_print = True
 
-def find_icon_in_window(window_title, icon_image_path):
+def find_icon_in_window(window_title, icon_image_path, room_para=None):
     """
     在指定窗口中查找图标，并返回最下面的图标中心的坐标。
 
@@ -70,18 +71,35 @@ def find_icon_in_window(window_title, icon_image_path):
     icon_positions = list(pyautogui.locateAllOnScreen(icon_image_path, region=(window.left, window.top, window.width, window.height), confidence=0.9))
 
     if icon_positions:
-        # 选择最后一个图标
-        icon_position = icon_positions[-1]
+        if room_para is None:
+            # 选择最后一个图标
+            icon_position = icon_positions[-1]
 
-        # 计算图标中心的坐标
-        x = icon_position[0] + icon_position[2] / 2
-        y = icon_position[1] + icon_position[3] / 2
-
-        return x, y
+            # 计算图标中心的坐标
+            x = icon_position[0] + icon_position[2] / 2
+            y = icon_position[1] + icon_position[3] / 2
+            if debug_print:
+                print(f"在窗口 {window_title} 中找到图标 {os.path.basename(icon_image_path)}，坐标为 ({x}, {y})")
+            return x, y
+        else:
+            for icon_position in icon_positions:
+                x = icon_position[0] + icon_position[2] / 2
+                y = icon_position[1] + icon_position[3] / 2
+                if is_target_room((x, y), room_para):
+                    return (x, y)
+            return 0
     else:
         # print("IR 在窗口 {} 中没有找到图标 {}".format(window_title, os.path.basename(icon_image_path)))
         return 0
 
+def is_target_room(icon_xy, room_para):
+    room_number = 0
+    # region = (icon_xy[0]-50, icon_xy[1]-50, 100, 100)
+    # room_number = getstring(region)
+    if room_number % 2 == room_para:
+        return icon_xy
+    else:
+        return None
 
 def capture_save(window_title):
     # 获取窗口

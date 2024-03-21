@@ -51,8 +51,8 @@ class BaseOperation:
         icon_path = os.path.join(script_dir, self.window.get('datapath', ''), self.window.get('platform', ''), icon_name)
         return icon_path
 
-    def findclick_icon_in_window(self, icon_name):
-        coord = ir.find_icon_in_window(self.window['title'], self.icon_full_name(icon_name))
+    def findclick_icon_in_window(self, icon_name, room_name= None):
+        coord = ir.find_icon_in_window(self.window['title'], self.icon_full_name(icon_name), room_name)
         if coord:
             time.sleep(2)
             # print(f"Clicked at coordinates: {coord[0]}, {coord[1]}")
@@ -77,7 +77,11 @@ class WePokerOperation(BaseOperation):
         while time.time() - start_time <= 60*2:  # minutes limit
             with pyautogui_lock:  # 使用 with 语句自动获取和释放锁
                 self.reset()
-                game_flage = self.join_game()
+                room_para = self.window.get('param', None)
+                if room_para:
+                    game_flage = self.join_game(room_para)
+                else:
+                    game_flage = self.join_game()
             if game_flage: break
             if stop_event.is_set(): break
             time.sleep(60)
@@ -97,11 +101,22 @@ class WePokerOperation(BaseOperation):
     def reset(self):
         for i in range(2):
             self.findclick_icon_in_window('tryagain.png')
+        # ticket
+        self.findclick_icon_in_window('ticket1.png')
+        time.sleep(5)
+        self.findclick_icon_in_window('ticket2.png')
+        # pocket
+        self.findclick_icon_in_window('pocket1.png')
+        time.sleep(5)
+        self.findclick_icon_in_window('pocket2.png')
+
         for i in range(3):
             self.findclick_icon_in_window('close.png')
             time.sleep(5)
         for i in range(2):
             self.findclick_icon_in_window('cancel.png')
+            time.sleep(5)
+            self.findclick_icon_in_window('cancel2.png')
         self.findclick_icon_in_window('refresh1.png')
         time.sleep(5)
         self.findclick_icon_in_window('refresh2.png')
@@ -109,8 +124,11 @@ class WePokerOperation(BaseOperation):
         print(f"在窗口 {self.window['title']} 完成刷新")
 
 
-    def join_game(self):
-        result = self.findclick_icon_in_window('dezhou.png')
+    def join_game(self, room_para= None):
+        if room_para:
+            result = self.findclick_icon_in_window('dezhou.png', room_para)
+        else:
+            result = self.findclick_icon_in_window('dezhou.png')
         time.sleep(10)
         if result:
             print(f"在窗口 {self.window['title']} 中加入了游戏")
@@ -143,9 +161,9 @@ def operate_on_window(window): # 线程函数
 def main():
     time.sleep(30)  # 等待一段时间，确保窗口已经打开
     windows = [
-        {'title': '雷电模拟器-0', 'datapath': 'icon', 'platform': 'wpk', 'param': 1}, # 3274 旺宝宝 深圳湾
-        {'title': '雷电模拟器-1', 'datapath': 'icon', 'platform': 'wpk', 'param': 2}, # 0051 女老师 龙争虎斗
-        {'title': '雷电模拟器-2', 'datapath': 'icon', 'platform': 'wpk', 'param': 3} # 9849 一龙马 龙争虎斗
+        {'title': '雷电模拟器-0', 'datapath': 'icon', 'platform': 'wpk', 'param': None}, # 3274 旺宝宝 深圳湾 1
+        {'title': '雷电模拟器-1', 'datapath': 'icon', 'platform': 'wpk', 'param': None}, # 0051 女老师 龙争虎斗 1
+        {'title': '雷电模拟器-2', 'datapath': 'icon', 'platform': 'wpk', 'param': None} # 9849 一龙马 龙争虎斗
     ]
 
     threads = []
