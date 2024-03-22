@@ -130,8 +130,8 @@ def preprocess_image(self, image, lighttext = True, threshold_binary=100, binari
 # 识别图像中的字符串
 
 # 识别图像中的字符串
-def recognize_black_digits(self, img):
-    preprocessed_img = self.preprocess_image(img, False, self.threshold_binary_white_text)
+def recognize_black_digits(img):
+    preprocessed_img = preprocess_image(img, False, 100)
     # 使用Tesseract OCR识别字符串
     custom_config = r'--oem 3 --psm 6 outputbase digits'
     string = pytesseract.image_to_string(preprocessed_img, config=custom_config)
