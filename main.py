@@ -161,8 +161,8 @@ def operate_on_window(window): # 线程函数
 def main():
     time.sleep(30)  # 等待一段时间，确保窗口已经打开
     windows = [
-        {'title': '雷电模拟器-0', 'datapath': 'icon', 'platform': 'wpk', 'param': None}, # 3274 旺宝宝 深圳湾 1
-        {'title': '雷电模拟器-1', 'datapath': 'icon', 'platform': 'wpk', 'param': None}, # 0051 女老师 龙争虎斗 1
+        {'title': '雷电模拟器-0', 'datapath': 'icon', 'platform': 'wpk', 'param': 1}, # 3274 旺宝宝 深圳湾 奇数局
+        {'title': '雷电模拟器-1', 'datapath': 'icon', 'platform': 'wpk', 'param': 0}, # 6508 管理员 深圳湾 偶数局
         {'title': '雷电模拟器-2', 'datapath': 'icon', 'platform': 'wpk', 'param': None} # 9849 一龙马 龙争虎斗
     ]
 

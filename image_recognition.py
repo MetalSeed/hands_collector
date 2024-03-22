@@ -100,6 +100,8 @@ def find_icon_in_window(window_title, icon_image_path, room_para=None):
         # print("IR 在窗口 {} 中没有找到图标 {}".format(window_title, os.path.basename(icon_image_path)))
         return 0
 
+
+
 def preprocess_image(self, image, lighttext = True, threshold_binary=100, binarize=True):
     if lighttext: basewidth = 300
     else: basewidth = 100
@@ -127,13 +129,18 @@ def recognize_black_digits(self, img):
     custom_config = r'--oem 3 --psm 6 outputbase digits'
     string = pytesseract.image_to_string(preprocessed_img, config=custom_config)
     return string.strip()
-    
+
+
 def is_target_room(icon_xy, room_para, windowshot):
-    room_number = 0
-    
-    region = (icon_xy[0]-50, icon_xy[1]-50, 100, 100)
+   
+    if 515 <= icon_xy[0] <= 606 and 681 <= icon_xy[1] <= 726:  # 第一行
+        region = (267, 746, 295, 720)
+    elif 512 <= icon_xy[0] <= 606 and 803 <= icon_xy[1] <= 851: # 第二行
+        region = (267, 868, 305, 843)
     croped_imd = windowshot.crop[region]
-    room_number = recognize_black_digits(croped_imd)
+    string = recognize_black_digits(croped_imd)
+    if string is None: string = 0
+    room_number = int(string)
 
     if room_number % 2 == room_para:
         return icon_xy
