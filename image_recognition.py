@@ -90,10 +90,17 @@ def find_icon_in_window(window_title, icon_image_path, room_para=None):
                 print(f"在窗口 {window_title} 中找到图标 {os.path.basename(icon_image_path)}，坐标为 ({x}, {y})")
             return x, y
         else:
-            for icon_position in icon_positions:
+            icon_position = icon_positions[-1]
+            x = icon_position[0] + icon_position[2] / 2
+            y = icon_position[1] + icon_position[3] / 2
+            if is_target_room((x, y), windowshot):
+                return (x, y)
+            
+            if len(icon_positions) > 1:
+                icon_position = icon_positions[-2]
                 x = icon_position[0] + icon_position[2] / 2
                 y = icon_position[1] + icon_position[3] / 2
-                if is_target_room((x, y), room_para, windowshot):
+                if is_target_room((x, y), windowshot):
                     return (x, y)
             return 0
     else:
