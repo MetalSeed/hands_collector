@@ -5,6 +5,9 @@ import pyautogui
 import pygetwindow as gw
 import os
 import time
+from PIL import Image
+import cv2
+import numpy as np
 
 debug_print = True
 
@@ -70,6 +73,11 @@ def find_icon_in_window(window_title, icon_image_path, room_para=None):
     print(f"{window_title} 窗口坐标:{window.left}, {window.top}, {window.width}, {window.height}")
     icon_positions = list(pyautogui.locateAllOnScreen(icon_image_path, region=(window.left, window.top, window.width, window.height), confidence=0.9))
 
+    # 获取窗口的位置和大小
+    x, y, width, height = window.left, window.top, window.width, window.height
+    # 截取指定区域的屏幕
+    windowshot = pyautogui.screenshot(region=(x, y, width, height))
+
     if icon_positions:
         if room_para is None:
             # 选择最后一个图标
@@ -85,17 +93,48 @@ def find_icon_in_window(window_title, icon_image_path, room_para=None):
             for icon_position in icon_positions:
                 x = icon_position[0] + icon_position[2] / 2
                 y = icon_position[1] + icon_position[3] / 2
-                if is_target_room((x, y), room_para):
+                if is_target_room((x, y), room_para, windowshot):
                     return (x, y)
             return 0
     else:
         # print("IR 在窗口 {} 中没有找到图标 {}".format(window_title, os.path.basename(icon_image_path)))
         return 0
 
-def is_target_room(icon_xy, room_para):
+def preprocess_image(self, image, lighttext = True, threshold_binary=100, binarize=True):
+    if lighttext: basewidth = 300
+    else: basewidth = 100
+    wpercent = (basewidth / float(image.size[0]))
+    hsize = int((float(image.size[1]) * float(wpercent)))
+    img_resized = image.convert('L').resize((basewidth, hsize), Image.LANCZOS)
+    if binarize:
+        """Binarize image from gray channel with 76 as threshold"""
+        img = cv2.cvtColor(np.array(img_resized), cv2.COLOR_BGR2RGB)
+        img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+        # 应用高斯模糊
+        blur = cv2.GaussianBlur(img, (5, 5), 0)
+        if lighttext: # 浅色字体，深色背景，cv2.THRESH_BINARY_INV 反转二进制
+            _, thresh = cv2.threshold(blur, threshold_binary, 255, cv2.THRESH_BINARY_INV) 
+        else: # 深色字体，浅色背景 自适应二值化阈值
+            _, thresh = cv2.threshold(blur, threshold_binary, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU) 
+        img_resized = thresh
+    return img_resized
+# 识别图像中的字符串
+
+# 识别图像中的字符串
+def recognize_black_digits(self, img):
+    preprocessed_img = self.preprocess_image(img, False, self.threshold_binary_white_text)
+    # 使用Tesseract OCR识别字符串
+    custom_config = r'--oem 3 --psm 6 outputbase digits'
+    string = pytesseract.image_to_string(preprocessed_img, config=custom_config)
+    return string.strip()
+    
+def is_target_room(icon_xy, room_para, windowshot):
     room_number = 0
-    # region = (icon_xy[0]-50, icon_xy[1]-50, 100, 100)
-    # room_number = getstring(region)
+    
+    region = (icon_xy[0]-50, icon_xy[1]-50, 100, 100)
+    croped_imd = windowshot.crop[region]
+    room_number = recognize_black_digits(croped_imd)
+
     if room_number % 2 == room_para:
         return icon_xy
     else:
