@@ -51,8 +51,8 @@ class BaseOperation:
         icon_path = os.path.join(script_dir, self.window.get('datapath', ''), self.window.get('platform', ''), icon_name)
         return icon_path
 
-    def findclick_icon_in_window(self, icon_name, room_name= None):
-        coord = ir.find_icon_in_window(self.window['title'], self.icon_full_name(icon_name), room_name)
+    def findclick_icon_in_window(self, icon_name, room_para= None):
+        coord = ir.find_icon_in_window(self.window['title'], self.icon_full_name(icon_name), room_para)
         if coord:
             auto.click_on_screen(coord[0], coord[1])
             time.sleep(10)
@@ -76,7 +76,7 @@ class WePokerOperation(BaseOperation):
             with pyautogui_lock:  # 使用 with 语句自动获取和释放锁
                 self.reset()
                 room_para = self.window.get('param', None)
-                if room_para:
+                if room_para is not None:
                     game_flage = self.join_game(room_para)
                 else:
                     game_flage = self.join_game()

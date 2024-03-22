@@ -141,6 +141,7 @@ def is_target_room(icon_xy, room_para, windowshot):
     string = recognize_black_digits(croped_imd)
     if string is None: string = 0
     room_number = int(string)
+    print(f"房间号：{room_number}")
 
     if room_number % 2 == room_para:
         return icon_xy
