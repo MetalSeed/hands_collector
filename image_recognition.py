@@ -134,9 +134,9 @@ def recognize_black_digits(self, img):
 def is_target_room(icon_xy, room_para, windowshot):
     region = None
     if 515 <= icon_xy[0] <= 606 and 681 <= icon_xy[1] <= 726:  # 第一行
-        region = (267, 746, 295, 720)
+        region = (267, 720, 295, 746)
     elif 512 <= icon_xy[0] <= 606 and 803 <= icon_xy[1] <= 851: # 第二行
-        region = (267, 868, 305, 843)
+        region = (267, 843, 305, 868)
     if region is None:
         return None
     croped_imd = windowshot.crop(region)
