@@ -93,14 +93,14 @@ def find_icon_in_window(window_title, icon_image_path, room_para=None):
             icon_position = icon_positions[-1]
             x = icon_position[0] + icon_position[2] / 2
             y = icon_position[1] + icon_position[3] / 2
-            if is_target_room((x, y), windowshot):
+            if is_target_room((x, y), room_para, windowshot):
                 return (x, y)
             
             if len(icon_positions) > 1:
                 icon_position = icon_positions[-2]
                 x = icon_position[0] + icon_position[2] / 2
                 y = icon_position[1] + icon_position[3] / 2
-                if is_target_room((x, y), windowshot):
+                if is_target_room((x, y), room_para, windowshot):
                     return (x, y)
             return 0
     else:
