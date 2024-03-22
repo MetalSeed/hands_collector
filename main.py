@@ -54,10 +54,8 @@ class BaseOperation:
     def findclick_icon_in_window(self, icon_name, room_name= None):
         coord = ir.find_icon_in_window(self.window['title'], self.icon_full_name(icon_name), room_name)
         if coord:
-            time.sleep(2)
-            # print(f"Clicked at coordinates: {coord[0]}, {coord[1]}")
             auto.click_on_screen(coord[0], coord[1])
-            time.sleep(2)
+            time.sleep(10)
             print(f"在窗口 {self.window['title']} 中点击了图标 {icon_name}")
             return True
         else:
@@ -103,24 +101,18 @@ class WePokerOperation(BaseOperation):
             self.findclick_icon_in_window('tryagain.png')
         # ticket
         self.findclick_icon_in_window('ticket1.png')
-        time.sleep(5)
         self.findclick_icon_in_window('ticket2.png')
         # pocket
         self.findclick_icon_in_window('pocket1.png')
-        time.sleep(5)
         self.findclick_icon_in_window('pocket2.png')
 
         for i in range(3):
             self.findclick_icon_in_window('close.png')
-            time.sleep(5)
         for i in range(2):
             self.findclick_icon_in_window('cancel.png')
-            time.sleep(5)
             self.findclick_icon_in_window('cancel2.png')
         self.findclick_icon_in_window('refresh1.png')
-        time.sleep(5)
         self.findclick_icon_in_window('refresh2.png')
-        time.sleep(5)
         print(f"在窗口 {self.window['title']} 完成刷新")
 
 
@@ -129,7 +121,7 @@ class WePokerOperation(BaseOperation):
             result = self.findclick_icon_in_window('dezhou.png', room_para)
         else:
             result = self.findclick_icon_in_window('dezhou.png')
-        time.sleep(10)
+        time.sleep(5)
         if result:
             print(f"在窗口 {self.window['title']} 中加入了游戏")
         else:
@@ -138,7 +130,7 @@ class WePokerOperation(BaseOperation):
 
     def quit_game(self):
         result = self.findclick_icon_in_window('back_to_lobby.png')
-        time.sleep(10)
+        time.sleep(5)
         if result: 
             print(f"在窗口 {self.window['title']} 点击了返回大厅")
             return True
