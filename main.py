@@ -117,7 +117,7 @@ class WePokerOperation(BaseOperation):
 
 
     def join_game(self, room_para= None):
-        if room_para:
+        if room_para is not None:
             result = self.findclick_icon_in_window('dezhou.png', room_para)
         else:
             result = self.findclick_icon_in_window('dezhou.png')
