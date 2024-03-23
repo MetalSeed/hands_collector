@@ -184,12 +184,12 @@ def convert_window_to_screen_coordinates(window_x, window_y, region):
 
 
 def is_target_room(icon_xy, room_para, windowshot):
-    global abs_region1, abs_region2
+    global abs_region1, abs_region2, region1, region2
     region = None
     if 515 <= icon_xy[0] <= 606 and 681 <= icon_xy[1] <= 726:  # 第一行
-        region = abs_region1
+        region = region1
     elif 512 <= icon_xy[0] <= 606 and 803 <= icon_xy[1] <= 851: # 第二行
-        region = abs_region2
+        region = region2
     if region is None:
         logging.debug(f"未找到图标 {icon_xy} 的区域")
         return None
