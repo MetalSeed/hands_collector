@@ -19,9 +19,9 @@ logging.basicConfig(format=(
 ), level=logging.DEBUG)
 
 # 第一行牌局 标记区域（相对窗口）
-region1 = (267, 720, 295, 746)
+region1 = (187, 701, 228, 727)
 # 第二行牌局 标记区域（相对窗口）
-region2 = (267, 843, 305, 868)
+region2 = (187, 823, 230, 852)
 
 abs_region1 = None
 abs_region2 = None
