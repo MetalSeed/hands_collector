@@ -18,7 +18,6 @@ logging.basicConfig(format=(
     '%(message)s'
 ), level=logging.DEBUG)
 
-from main import windowshot_file_test
 
 def find_icon_in_window(window_title, icon_image_path, room_para=None):
     """
@@ -76,19 +75,13 @@ def find_icon_in_window(window_title, icon_image_path, room_para=None):
             print("没有找到标题为 '{}' 的窗口".format(window_title))
             time.sleep(10)  # 每10秒检查一次
 
-
-
     # 在窗口中查找所有匹配的图标
     print(f"{window_title} 窗口坐标:{window.left}, {window.top}, {window.width}, {window.height}")
     icon_positions = list(pyautogui.locateAllOnScreen(icon_image_path, region=(window.left, window.top, window.width, window.height), confidence=0.9))
 
-    if windowshot_file_test:
-        windowshot = Image.open('113.png')
-    else:
-        # 获取窗口的位置和大小
-        x, y, width, height = window.left, window.top, window.width, window.height
-        # 截取指定区域的屏幕
-        windowshot = pyautogui.screenshot(region=(x, y, width, height))
+    # 获取窗口的位置和大小
+    x, y, width, height = window.left, window.top, window.width, window.height
+    windowshot = pyautogui.screenshot(region=(x, y, width, height))
 
     if icon_positions:
         logging.debug(f"在窗口 {window_title} 中找到 {len(icon_positions)} 个图标 {os.path.basename(icon_image_path)}")
@@ -99,13 +92,14 @@ def find_icon_in_window(window_title, icon_image_path, room_para=None):
             # 计算图标中心的坐标
             x = icon_position[0] + icon_position[2] / 2
             y = icon_position[1] + icon_position[3] / 2
-            logging.debug(f"在窗口 {window_title} 中找到图标 {os.path.basename(icon_image_path)}，坐标为 ({x}, {y})")
+            logging.debug(f"在窗口 {window_title} 最下方的 {os.path.basename(icon_image_path)}，坐标为 ({x}, {y})")
             return x, y
         else:
             icon_position = icon_positions[-1]
             x = icon_position[0] + icon_position[2] / 2
             y = icon_position[1] + icon_position[3] / 2
             if is_target_room((x, y), room_para, windowshot):
+                logging.debug(f"在窗口 {window_title} 最下方的 {os.path.basename(icon_image_path)}，坐标为 ({x}, {y})")
                 return (x, y)
             
             if len(icon_positions) > 1:
@@ -113,10 +107,11 @@ def find_icon_in_window(window_title, icon_image_path, room_para=None):
                 x = icon_position[0] + icon_position[2] / 2
                 y = icon_position[1] + icon_position[3] / 2
                 if is_target_room((x, y), room_para, windowshot):
+                    logging.debug(f"在窗口 {window_title} 倒数第二个 {os.path.basename(icon_image_path)}，坐标为 ({x}, {y})")
                     return (x, y)
             return 0
     else:
-        # print("IR 在窗口 {} 中没有找到图标 {}".format(window_title, os.path.basename(icon_image_path)))
+        logging.info("IR 在窗口 {} 中没有找到图标 {}".format(window_title, os.path.basename(icon_image_path)))
         return 0
 
 

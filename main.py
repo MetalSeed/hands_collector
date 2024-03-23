@@ -20,7 +20,6 @@ import time
 # 全局停止事件，用于优雅地中断线程
 stop_event = threading.Event()
 pyautogui_lock = Lock()
-windowshot_file_test = False
 
 import os
 
@@ -67,7 +66,6 @@ class test_operation(BaseOperation):
     global windowshot_file_test
     def __init__(self, window):
         self.window = window
-        windowshot_file_test = True
 
     """对测试窗口执行自动化操作。"""
     def perform_operations(self): # 循环自动化
