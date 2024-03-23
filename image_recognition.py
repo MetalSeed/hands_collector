@@ -16,7 +16,7 @@ logging.basicConfig(format=(
     '%(asctime)s - %(levelname)s - '
     '[%(filename)s - %(funcName)s - Line %(lineno)d]: '
     '%(message)s'
-), level=logging.INFO)
+), level=logging.DEBUG)
 
 # 第一行 HLH区域
 dezhou1_rect = (434, 657, 530, 711)
@@ -59,12 +59,13 @@ def find_icon_in_window(window_title, icon_image_path, room_para=None):
             if window.isMinimized:
                 print("窗口 '{}' 已最小化".format(window_title))
                 try:
+                    time.sleep(5)
                     window.restore()
                     time.sleep(5) # 等待窗口被恢复，可能需要根据实际情况调整等待时间
                 except gw.PyGetWindowException as e:
                     print(f"恢复窗口时发生错误: {e}")
                     # 根据需要添加额外的处理逻辑，例如记录日志等
-                time.sleep(10)  # 每10秒检查一次
+                # time.sleep(10)  # 每10秒检查一次
                 continue
 
             # 检查窗口是否不可见
@@ -89,7 +90,7 @@ def find_icon_in_window(window_title, icon_image_path, room_para=None):
 
     # 在窗口中查找所有匹配的图标
     print(f"{window_title} 窗口坐标:{window.left}, {window.top}, {window.width}, {window.height}")
-    icon_positions = list(pyautogui.locateAllOnScreen(icon_image_path, region=(window.left, window.top, window.width, window.height), confidence=0.95))
+    icon_positions = list(pyautogui.locateAllOnScreen(icon_image_path, region=(window.left, window.top, window.width, window.height), confidence=0.9))
 
     # 获取窗口的位置和大小
     x, y, width, height = window.left, window.top, window.width, window.height
@@ -166,7 +167,7 @@ def is_target_room(icon_xy, room_para, windowshot):
     elif dezhou2_rect[0] <= icon_xy[0] <= dezhou2_rect[2] and dezhou2_rect[1] <= icon_xy[1] <= dezhou2_rect[3]: # 第二行
         region = region2
     if region is None:
-        logging.INFO(f"图标坐标 {icon_xy} 不在目标区域")
+        logging.info(f"图标坐标 {icon_xy} 不在目标区域")
         return None
     
     croped_imd = windowshot.crop(region)
