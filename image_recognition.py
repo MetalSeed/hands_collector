@@ -193,8 +193,8 @@ def is_target_room(icon_xy, room_para, windowshot):
     if region is None:
         logging.debug(f"未找到图标 {icon_xy} 的区域")
         return None
-    windowshot_pil = Image.open(windowshot)
-    croped_imd = windowshot_pil.crop(region)
+    
+    croped_imd = windowshot.crop(region)
     croped_imd.save('croped_img.png')
 
     room_number = recognize_black_digits(croped_imd)
