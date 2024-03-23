@@ -18,8 +18,16 @@ logging.basicConfig(format=(
     '%(message)s'
 ), level=logging.DEBUG)
 
+# 第一行牌局 标记区域（相对窗口）
+region1 = (267, 720, 295, 746)
+# 第二行牌局 标记区域（相对窗口）
+region2 = (267, 843, 305, 868)
+
+abs_region1 = None
+abs_region2 = None
 
 def find_icon_in_window(window_title, icon_image_path, room_para=None):
+    global abs_region1, abs_region2, region1, region2
     """
     在指定窗口中查找图标，并返回最下面的图标中心的坐标。
 
@@ -82,6 +90,9 @@ def find_icon_in_window(window_title, icon_image_path, room_para=None):
     # 获取窗口的位置和大小
     x, y, width, height = window.left, window.top, window.width, window.height
     windowshot = pyautogui.screenshot(region=(x, y, width, height))
+
+    abs_region1 = convert_window_to_screen_coordinates(x, y, region1)
+    abs_region2 = convert_window_to_screen_coordinates(x, y, region2)
 
     if icon_positions:
         logging.debug(f"在窗口 {window_title} 中找到 {len(icon_positions)} 个图标 {os.path.basename(icon_image_path)}")
@@ -152,14 +163,35 @@ def recognize_black_digits(img):
     logging.debug(f"识别的数字: {digits}")
     return digits
 
+def convert_window_to_screen_coordinates(window_x, window_y, region):
+    """
+    将相对于窗口的区域坐标转换为相对于屏幕的区域坐标。
+
+    参数:
+    - window_x: 窗口在屏幕上的左上角x坐标
+    - window_y: 窗口在屏幕上的左上角y坐标
+    - region: 相对于窗口的区域坐标，格式为(left, top, right, bottom)
+
+    返回:
+    - 转换后的区域坐标，格式为(left, top, right, bottom)
+    """
+    left, top, right, bottom = region
+    screen_left = window_x + left
+    screen_top = window_y + top
+    screen_right = window_x + right
+    screen_bottom = window_y + bottom
+    return (screen_left, screen_top, screen_right, screen_bottom)
+
 
 def is_target_room(icon_xy, room_para, windowshot):
+    global abs_region1, abs_region2
     region = None
     if 515 <= icon_xy[0] <= 606 and 681 <= icon_xy[1] <= 726:  # 第一行
-        region = (267, 720, 295, 746)
+        region = abs_region1
     elif 512 <= icon_xy[0] <= 606 and 803 <= icon_xy[1] <= 851: # 第二行
-        region = (267, 843, 305, 868)
+        region = abs_region2
     if region is None:
+        logging.debug(f"未找到图标 {icon_xy} 的区域")
         return None
     windowshot_pil = Image.open(windowshot)
     croped_imd = windowshot_pil.crop(region)
