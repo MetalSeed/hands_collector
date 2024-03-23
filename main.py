@@ -161,7 +161,7 @@ class WePokerOperation(BaseOperation):
         else:
             return False
         
-def operate_on_window(window): # 线程函数
+def operate_on_window(window): # 线程函数11
     # 根据窗口标题选择操作类
     if window.get('platform', '') == 'wpk':
         if window.get('test', True):
