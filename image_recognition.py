@@ -116,7 +116,7 @@ def find_icon_in_window(window_title, icon_image_path, room_para=None):
 
 
 
-def preprocess_image(self, image, lighttext = True, threshold_binary=100, binarize=True):
+def preprocess_image(image, lighttext = True, threshold_binary=100, binarize=True):
     if lighttext: basewidth = 300
     else: basewidth = 100
     wpercent = (basewidth / float(image.size[0]))
