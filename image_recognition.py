@@ -9,7 +9,16 @@ from PIL import Image
 import cv2
 import numpy as np
 
-debug_print = True
+import logging
+# 配置日志格式，包括时间、日志级别、文件名、所处函数名、所在行数和消息
+# 使用括号将格式字符串分成多行，以提高可读性
+logging.basicConfig(format=(
+    '%(asctime)s - %(levelname)s - '
+    '[%(filename)s - %(funcName)s - Line %(lineno)d]: '
+    '%(message)s'
+), level=logging.DEBUG)
+
+from main import windowshot_file_test
 
 def find_icon_in_window(window_title, icon_image_path, room_para=None):
     """
@@ -73,12 +82,16 @@ def find_icon_in_window(window_title, icon_image_path, room_para=None):
     print(f"{window_title} 窗口坐标:{window.left}, {window.top}, {window.width}, {window.height}")
     icon_positions = list(pyautogui.locateAllOnScreen(icon_image_path, region=(window.left, window.top, window.width, window.height), confidence=0.9))
 
-    # 获取窗口的位置和大小
-    x, y, width, height = window.left, window.top, window.width, window.height
-    # 截取指定区域的屏幕
-    windowshot = pyautogui.screenshot(region=(x, y, width, height))
+    if windowshot_file_test:
+        windowshot = Image.open('113.png')
+    else:
+        # 获取窗口的位置和大小
+        x, y, width, height = window.left, window.top, window.width, window.height
+        # 截取指定区域的屏幕
+        windowshot = pyautogui.screenshot(region=(x, y, width, height))
 
     if icon_positions:
+        logging.debug(f"在窗口 {window_title} 中找到 {len(icon_positions)} 个图标 {os.path.basename(icon_image_path)}")
         if room_para is None:
             # 选择最后一个图标
             icon_position = icon_positions[-1]
@@ -86,8 +99,7 @@ def find_icon_in_window(window_title, icon_image_path, room_para=None):
             # 计算图标中心的坐标
             x = icon_position[0] + icon_position[2] / 2
             y = icon_position[1] + icon_position[3] / 2
-            if debug_print:
-                print(f"在窗口 {window_title} 中找到图标 {os.path.basename(icon_image_path)}，坐标为 ({x}, {y})")
+            logging.debug(f"在窗口 {window_title} 中找到图标 {os.path.basename(icon_image_path)}，坐标为 ({x}, {y})")
             return x, y
         else:
             icon_position = icon_positions[-1]
@@ -135,7 +147,15 @@ def recognize_black_digits(img):
     # 使用Tesseract OCR识别字符串
     custom_config = r'--oem 3 --psm 6 outputbase digits'
     string = pytesseract.image_to_string(preprocessed_img, config=custom_config)
-    return string.strip()
+    string = string.strip()
+    
+    logging.debug(f"识别的字符串: {string}")
+    if string  is None or string == '':
+        string = '0'
+
+    digits = int(string)
+    logging.debug(f"识别的数字: {digits}")
+    return digits
 
 
 def is_target_room(icon_xy, room_para, windowshot):
@@ -147,10 +167,8 @@ def is_target_room(icon_xy, room_para, windowshot):
     if region is None:
         return None
     croped_imd = windowshot.crop(region)
-    string = recognize_black_digits(croped_imd)
-    if string is None: string = 0
-    room_number = int(string)
-    print(f"房间号：{room_number}")
+    room_number = recognize_black_digits(croped_imd)
+    logging.debug(f"房间号：{room_number}")
 
     if room_number % 2 == room_para:
         return icon_xy

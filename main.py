@@ -20,6 +20,7 @@ import time
 # 全局停止事件，用于优雅地中断线程
 stop_event = threading.Event()
 pyautogui_lock = Lock()
+windowshot_file_test = False
 
 import os
 
@@ -62,6 +63,21 @@ class BaseOperation:
             print(f"在窗口 {self.window['title']} 中没有图标 {icon_name}")
             return False
         
+class test_operation(BaseOperation):
+    global windowshot_file_test
+    def __init__(self, window):
+        self.window = window
+        windowshot_file_test = True
+
+    """对测试窗口执行自动化操作。"""
+    def perform_operations(self): # 循环自动化
+        global pyautogui_lock
+
+        with pyautogui_lock:  # 使用 with 语句自动获取和释放锁
+            coord = ir.find_icon_in_window(self.window['title'], self.icon_full_name('dezhou.png'), self.window.get('param'))
+            print(f"在窗口 {self.window['title']} 中找到图标 {coord}")
+
+        time.sleep(5)
 
 class WePokerOperation(BaseOperation):
     def __init__(self, window):
@@ -141,8 +157,8 @@ def operate_on_window(window): # 线程函数
     # 根据窗口标题选择操作类
     if window.get('platform', '') == 'wpk':
         operation = WePokerOperation(window)
-    elif window.get('platform', '') == 'other':
-        pass
+    elif window.get('platform', '') == 'test':
+        operation = test_operation(window)
 
     # 执行操作直到收到停止信号
     while not stop_event.is_set():
@@ -153,9 +169,10 @@ def operate_on_window(window): # 线程函数
 def main():
     time.sleep(30)  # 等待一段时间，确保窗口已经打开
     windows = [
-        {'title': '雷电模拟器-0', 'datapath': 'icon', 'platform': 'wpk', 'param': 1}, # 3274 旺宝宝 深圳湾 奇数局
-        {'title': '雷电模拟器-1', 'datapath': 'icon', 'platform': 'wpk', 'param': 0}, # 6508 管理员 深圳湾 偶数局
-        {'title': '雷电模拟器-2', 'datapath': 'icon', 'platform': 'wpk', 'param': None} # 9849 一龙马 龙争虎斗
+        {'title': '雷电模拟器-0', 'datapath': 'icon', 'platform': 'test', 'param': 1}, # 3274 旺宝宝 深圳湾 奇数局
+        # {'title': '雷电模拟器-0', 'datapath': 'icon', 'platform': 'wpk', 'param': 1}, # 3274 旺宝宝 深圳湾 奇数局
+        # {'title': '雷电模拟器-1', 'datapath': 'icon', 'platform': 'wpk', 'param': 0}, # 6508 管理员 深圳湾 偶数局
+        # {'title': '雷电模拟器-2', 'datapath': 'icon', 'platform': 'wpk', 'param': None} # 9849 一龙马 龙争虎斗
     ]
 
     threads = []
