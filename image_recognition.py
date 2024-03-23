@@ -161,8 +161,12 @@ def is_target_room(icon_xy, room_para, windowshot):
         region = (267, 843, 305, 868)
     if region is None:
         return None
-    croped_imd = windowshot.crop(region)
+    windowshot_pil = Image.open(windowshot)
+    croped_imd = windowshot_pil.crop(region)
+    croped_imd.save('croped_img.png')
+
     room_number = recognize_black_digits(croped_imd)
+
     logging.debug(f"房间号：{room_number}")
 
     if room_number % 2 == room_para:

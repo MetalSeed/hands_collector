@@ -161,7 +161,7 @@ class WePokerOperation(BaseOperation):
         else:
             return False
         
-def operate_on_window(window): # 线程函数11
+def operate_on_window(window): # 线程函数
     # 根据窗口标题选择操作类
     if window.get('platform', '') == 'wpk':
         if window.get('test', True):
@@ -178,7 +178,7 @@ def operate_on_window(window): # 线程函数11
 
 
 def main():
-    time.sleep(30)  # 等待一段时间，确保窗口已经打开
+    time.sleep(5)  # 等待一段时间，确保窗口已经打开
     windows = [
         {'title': '雷电模拟器-0', 'datapath': 'icon', 'platform': 'wpk', 'param': 1, 'test': True}, # 3274 旺宝宝 深圳湾 奇数局
         # {'title': '雷电模拟器-0', 'datapath': 'icon', 'platform': 'wpk', 'param': 1，'test': False}, # 3274 旺宝宝 深圳湾 奇数局
