@@ -95,7 +95,7 @@ def find_icon_in_window(window_title, icon_image_path, room_para=None):
 
 
     if icon_positions:
-        logging.debug(f"在窗口 {window_title} 中找到 {len(icon_positions)} 个图标 {os.path.basename(icon_image_path)}")
+        logging.debug(f"!!在窗口 {window_title} 中找到 {len(icon_positions)} 个图标 {os.path.basename(icon_image_path)}")
         if room_para is None:
             # 选择最后一个图标
             icon_position = icon_positions[-1]
@@ -176,7 +176,7 @@ def is_target_room(icon_xy, room_para, windowshot):
         return None
     
     croped_imd = windowshot.crop(region)
-    # croped_imd.save('croped_img.png')
+    croped_imd.save('croped_img.png') ########################## check crop region
 
     room_number = recognize_black_digits(croped_imd)
 
