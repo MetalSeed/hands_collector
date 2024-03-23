@@ -19,9 +19,9 @@ logging.basicConfig(format=(
 ), level=logging.INFO)
 
 # 第一行 HLH区域
-dezhou1_rect = (434, 657, 525, 711)
+dezhou1_rect = (434, 657, 530, 711)
 # 第二行 HLH区域
-dezhou2_rect = (434, 781, 528, 833)
+dezhou2_rect = (434, 781, 530, 833)
 
 # 第一行牌局 标记区域（相对窗口）
 region1 = (187, 701, 228, 727)
@@ -87,7 +87,7 @@ def find_icon_in_window(window_title, icon_image_path, room_para=None):
 
     # 在窗口中查找所有匹配的图标
     print(f"{window_title} 窗口坐标:{window.left}, {window.top}, {window.width}, {window.height}")
-    icon_positions = list(pyautogui.locateAllOnScreen(icon_image_path, region=(window.left, window.top, window.width, window.height), confidence=0.9))
+    icon_positions = list(pyautogui.locateAllOnScreen(icon_image_path, region=(window.left, window.top, window.width, window.height), confidence=0.95))
 
     # 获取窗口的位置和大小
     x, y, width, height = window.left, window.top, window.width, window.height
@@ -172,7 +172,7 @@ def is_target_room(icon_xy, room_para, windowshot):
     elif dezhou2_rect[0] <= icon_xy[0] <= dezhou2_rect[2] and dezhou2_rect[1] <= icon_xy[1] <= dezhou2_rect[3]: # 第二行
         region = region2
     if region is None:
-        logging.debug(f"未找到图标 {icon_xy} 的区域")
+        logging.debug(f"图标坐标 {icon_xy} 不在目标区域")
         return None
     
     croped_imd = windowshot.crop(region)
