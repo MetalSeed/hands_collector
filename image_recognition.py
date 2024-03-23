@@ -110,7 +110,7 @@ def find_icon_in_window(window_title, icon_image_path, room_para=None):
             x = icon_position[0] + icon_position[2] / 2
             y = icon_position[1] + icon_position[3] / 2
             if is_target_room((x, y), room_para, windowshot):
-                logging.debug(f"在窗口 {window_title} 最下方的 {os.path.basename(icon_image_path)}，坐标为 ({x}, {y})")
+                logging.info(f"在窗口 {window_title} 最下方的 {os.path.basename(icon_image_path)}，坐标为 ({x}, {y})")
                 return (x, y)
             
             if len(icon_positions) > 1:
@@ -118,7 +118,7 @@ def find_icon_in_window(window_title, icon_image_path, room_para=None):
                 x = icon_position[0] + icon_position[2] / 2
                 y = icon_position[1] + icon_position[3] / 2
                 if is_target_room((x, y), room_para, windowshot):
-                    logging.debug(f"在窗口 {window_title} 倒数第二个 {os.path.basename(icon_image_path)}，坐标为 ({x}, {y})")
+                    logging.info(f"在窗口 {window_title} 倒数第二个 {os.path.basename(icon_image_path)}，坐标为 ({x}, {y})")
                     return (x, y)
             return 0
     else:
