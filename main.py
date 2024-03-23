@@ -15,6 +15,7 @@ import image_recognition as ir
 import automation as auto
 from threading import Lock
 
+import logging
 import threading
 import time
 # 全局停止事件，用于优雅地中断线程
@@ -164,7 +165,7 @@ class WePokerOperation(BaseOperation):
 def operate_on_window(window): # 线程函数
     # 根据窗口标题选择操作类
     if window.get('platform', '') == 'wpk':
-        if window.get('test', True):
+        if window.get('testflag', True):
             operation = testOperation(window)
         else:
             operation = WePokerOperation(window)
@@ -180,10 +181,10 @@ def operate_on_window(window): # 线程函数
 def main():
     time.sleep(10)  # 等待一段时间，确保窗口已经打开
     windows = [
-        {'title': '雷电模拟器-0', 'datapath': 'icon', 'platform': 'wpk', 'param': 1, 'test': True}, # 3274 旺宝宝 深圳湾 奇数局
-        # {'title': '雷电模拟器-0', 'datapath': 'icon', 'platform': 'wpk', 'param': 1, 'test': False}, # 3274 旺宝宝 深圳湾 奇数局
-        # {'title': '雷电模拟器-1', 'datapath': 'icon', 'platform': 'wpk', 'param': 0, 'test': False}, # 6508 管理员 深圳湾 偶数局
-        # {'title': '雷电模拟器-2', 'datapath': 'icon', 'platform': 'wpk', 'param': None, 'test': False} # 9849 一龙马 龙争虎斗
+        # {'title': '雷电模拟器-0', 'datapath': 'icon', 'platform': 'wpk', 'param': 1, 'testflag': True}, # 3274 旺宝宝 深圳湾 奇数局
+        {'title': '雷电模拟器-0', 'datapath': 'icon', 'platform': 'wpk', 'param': 1, 'testflag': False}, # 3274 旺宝宝 深圳湾 奇数局
+        {'title': '雷电模拟器-1', 'datapath': 'icon', 'platform': 'wpk', 'param': 0, 'testflag': False}, # 6508 管理员 深圳湾 偶数局
+        {'title': '雷电模拟器-2', 'datapath': 'icon', 'platform': 'wpk', 'param': None, 'testflag': False} # 9849 一龙马 龙争虎斗
     ]
 
     threads = []
@@ -207,7 +208,5 @@ def main():
 if __name__ == "__main__":
     main()
 
-
-# 请注意，并行处理可能会导致资源竞争（比如同时操作鼠标和键盘），这在
 
 # 有时间可以优化成 颜色匹配 和坐标点击。

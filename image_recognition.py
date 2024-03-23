@@ -28,6 +28,8 @@ region1 = (187, 701, 228, 727)
 # 第二行牌局 标记区域（相对窗口）
 region2 = (187, 823, 230, 852)
 
+# 房间名 room_number % room_mod == room_para
+room_mod = 2
 
 def find_icon_in_window(window_title, icon_image_path, room_para=None):
     """
@@ -106,23 +108,15 @@ def find_icon_in_window(window_title, icon_image_path, room_para=None):
             logging.debug(f"在窗口 {window_title} 最下方的 {os.path.basename(icon_image_path)}，坐标为 ({x}, {y})")
             return x, y
         else:
-            icon_position = icon_positions[-1]
-            x = icon_position[0] + icon_position[2] / 2
-            y = icon_position[1] + icon_position[3] / 2
-            if is_target_room((x, y), room_para, windowshot):
-                logging.info(f"在窗口 {window_title} 最下方的 {os.path.basename(icon_image_path)}，坐标为 ({x}, {y})")
-                return (x, y)
-            
-            if len(icon_positions) > 1:
-                icon_position = icon_positions[-2]
+            for icon_position in reversed(icon_positions):
                 x = icon_position[0] + icon_position[2] / 2
                 y = icon_position[1] + icon_position[3] / 2
                 if is_target_room((x, y), room_para, windowshot):
-                    logging.info(f"在窗口 {window_title} 倒数第二个 {os.path.basename(icon_image_path)}，坐标为 ({x}, {y})")
+                    logging.info(f"在窗口 {window_title} 中找到图标 {os.path.basename(icon_image_path)}，坐标为 ({x}, {y})")
                     return (x, y)
             return 0
     else:
-        logging.info("IR 在窗口 {} 中没有找到图标 {}".format(window_title, os.path.basename(icon_image_path)))
+        logging.info("在窗口 {} 中没有找到图标 {}".format(window_title, os.path.basename(icon_image_path)))
         return 0
 
 
@@ -172,11 +166,11 @@ def is_target_room(icon_xy, room_para, windowshot):
     elif dezhou2_rect[0] <= icon_xy[0] <= dezhou2_rect[2] and dezhou2_rect[1] <= icon_xy[1] <= dezhou2_rect[3]: # 第二行
         region = region2
     if region is None:
-        logging.debug(f"图标坐标 {icon_xy} 不在目标区域")
+        logging.INFO(f"图标坐标 {icon_xy} 不在目标区域")
         return None
     
     croped_imd = windowshot.crop(region)
-    croped_imd.save('croped_img.png') ########################## check crop region
+    # croped_imd.save('croped_img.png') ########################## check crop region
 
     room_number = recognize_black_digits(croped_imd)
 
