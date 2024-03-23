@@ -16,18 +16,20 @@ logging.basicConfig(format=(
     '%(asctime)s - %(levelname)s - '
     '[%(filename)s - %(funcName)s - Line %(lineno)d]: '
     '%(message)s'
-), level=logging.DEBUG)
+), level=logging.INFO)
+
+# 第一行 HLH区域
+dezhou1_rect = (434, 657, 525, 711)
+# 第二行 HLH区域
+dezhou2_rect = (434, 781, 528, 833)
 
 # 第一行牌局 标记区域（相对窗口）
 region1 = (187, 701, 228, 727)
 # 第二行牌局 标记区域（相对窗口）
 region2 = (187, 823, 230, 852)
 
-abs_region1 = None
-abs_region2 = None
 
 def find_icon_in_window(window_title, icon_image_path, room_para=None):
-    global abs_region1, abs_region2, region1, region2
     """
     在指定窗口中查找图标，并返回最下面的图标中心的坐标。
 
@@ -91,8 +93,6 @@ def find_icon_in_window(window_title, icon_image_path, room_para=None):
     x, y, width, height = window.left, window.top, window.width, window.height
     windowshot = pyautogui.screenshot(region=(x, y, width, height))
 
-    abs_region1 = convert_window_to_screen_coordinates(x, y, region1)
-    abs_region2 = convert_window_to_screen_coordinates(x, y, region2)
 
     if icon_positions:
         logging.debug(f"在窗口 {window_title} 中找到 {len(icon_positions)} 个图标 {os.path.basename(icon_image_path)}")
@@ -163,43 +163,24 @@ def recognize_black_digits(img):
     logging.debug(f"识别的数字: {digits}")
     return digits
 
-def convert_window_to_screen_coordinates(window_x, window_y, region):
-    """
-    将相对于窗口的区域坐标转换为相对于屏幕的区域坐标。
-
-    参数:
-    - window_x: 窗口在屏幕上的左上角x坐标
-    - window_y: 窗口在屏幕上的左上角y坐标
-    - region: 相对于窗口的区域坐标，格式为(left, top, right, bottom)
-
-    返回:
-    - 转换后的区域坐标，格式为(left, top, right, bottom)
-    """
-    left, top, right, bottom = region
-    screen_left = window_x + left
-    screen_top = window_y + top
-    screen_right = window_x + right
-    screen_bottom = window_y + bottom
-    return (screen_left, screen_top, screen_right, screen_bottom)
-
 
 def is_target_room(icon_xy, room_para, windowshot):
-    global abs_region1, abs_region2, region1, region2
+    global region1, region2, dezhou1_rect, dezhou2_rect
     region = None
-    if 515 <= icon_xy[0] <= 606 and 681 <= icon_xy[1] <= 726:  # 第一行
+    if dezhou1_rect[0] <= icon_xy[0] <= dezhou1_rect[2] and dezhou1_rect[1] <= icon_xy[1] <= dezhou1_rect[3]:  # 第一行
         region = region1
-    elif 512 <= icon_xy[0] <= 606 and 803 <= icon_xy[1] <= 851: # 第二行
+    elif dezhou2_rect[0] <= icon_xy[0] <= dezhou2_rect[2] and dezhou2_rect[1] <= icon_xy[1] <= dezhou2_rect[3]: # 第二行
         region = region2
     if region is None:
         logging.debug(f"未找到图标 {icon_xy} 的区域")
         return None
     
     croped_imd = windowshot.crop(region)
-    croped_imd.save('croped_img.png')
+    # croped_imd.save('croped_img.png')
 
     room_number = recognize_black_digits(croped_imd)
 
-    logging.debug(f"房间号：{room_number}")
+    logging.info(f"房间号：{room_number}")
 
     if room_number % 2 == room_para:
         return icon_xy
